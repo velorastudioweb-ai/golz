@@ -37,53 +37,55 @@ export default function Header() {
   const name = site.general?.clinicName || "GOLZ (Giggles of Livez)";
 
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-50 border-b border-ink/10 bg-[rgba(247,248,245,0.86)] backdrop-blur-[10px] transition-shadow duration-300 ${
-        scrolled ? "shadow-soft" : ""
-      }`}
-    >
-      <div className="container-x flex h-[72px] items-center justify-between gap-4">
-        <Link to="/" className="flex min-w-0 items-center gap-2.5" aria-label="Home">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-primary text-white shadow-soft">
-            <Leaf size={22} />
-          </span>
-          <span className="min-w-0 leading-tight">
-            <span className="block truncate font-heading text-lg font-semibold text-ink">{name}</span>
-            <span className="hidden text-[11px] tracking-wide text-muted sm:block">{site.general?.tagline || "Personalized Nutrition"}</span>
-          </span>
-        </Link>
-
-        <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">
-          {NAV.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                `rounded-full px-4 py-2 font-body text-[14.5px] font-medium transition ${
-                  isActive ? "bg-primary/10 text-primary" : "text-ink/75 hover:bg-primary/5 hover:text-primary"
-                }`
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="flex shrink-0 items-center gap-3">
-          <Link to="/contact" className="btn-primary hidden !px-5 !py-2.5 !text-sm md:inline-flex">
-            <CalendarCheck size={17} /> Book Consultation
+    <>
+      <header
+        className={`fixed inset-x-0 top-0 z-50 border-b border-ink/10 bg-[rgba(247,248,245,0.86)] backdrop-blur-[10px] transition-shadow duration-300 ${
+          scrolled ? "shadow-soft" : ""
+        }`}
+      >
+        <div className="container-x flex h-[72px] items-center justify-between gap-4">
+          <Link to="/" className="flex min-w-0 items-center gap-2.5" aria-label="Home">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-primary text-white shadow-soft">
+              <Leaf size={22} />
+            </span>
+            <span className="min-w-0 leading-tight">
+              <span className="block truncate font-heading text-lg font-semibold text-ink">{name}</span>
+              <span className="hidden text-[11px] tracking-wide text-muted sm:block">{site.general?.tagline || "Personalized Nutrition"}</span>
+            </span>
           </Link>
-          <button
-            onClick={() => setOpen((o) => !o)}
-            aria-label={open ? "Close menu" : "Open menu"}
-            aria-expanded={open}
-            aria-controls="mobile-menu"
-            className={`rounded-xl p-2.5 transition lg:hidden ${open ? "bg-primary/10 text-primary" : "text-ink hover:bg-primary/5"}`}
-          >
-            {open ? <X size={24} /> : <Menu size={24} />}
-          </button>
+
+          <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">
+            {NAV.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  `rounded-full px-4 py-2 font-body text-[14.5px] font-medium transition ${
+                    isActive ? "bg-primary/10 text-primary" : "text-ink/75 hover:bg-primary/5 hover:text-primary"
+                  }`
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
+
+          <div className="flex shrink-0 items-center gap-3">
+            <Link to="/contact" className="btn-primary hidden !px-5 !py-2.5 !text-sm md:inline-flex">
+              <CalendarCheck size={17} /> Book Consultation
+            </Link>
+            <button
+              onClick={() => setOpen((o) => !o)}
+              aria-label={open ? "Close menu" : "Open menu"}
+              aria-expanded={open}
+              aria-controls="mobile-menu"
+              className={`rounded-xl p-2.5 transition lg:hidden ${open ? "bg-primary/10 text-primary" : "text-ink hover:bg-primary/5"}`}
+            >
+              {open ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
-      </div>
+      </header>
 
       <AnimatePresence>
         {open && (
@@ -129,6 +131,6 @@ export default function Header() {
           </motion.nav>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 }
