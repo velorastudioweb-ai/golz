@@ -42,7 +42,7 @@ function TestimonialCard({ item }) {
           <button
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
-            className="mt-2 text-sm font-semibold text-[#16A34A] transition-colors hover:text-[#12843A]"
+            className="mt-2 text-[18px] font-semibold text-[#16A34A] transition-colors hover:text-[#12843A]"
           >
             {expanded ? "Read Less" : "Read More"}
           </button>
@@ -66,8 +66,8 @@ function TestimonialCard({ item }) {
           </span>
         )}
         <div className="min-w-0">
-          <h3 className="h3 truncate text-[#111827]">{name}</h3>
-          {role && <p className="truncate text-base text-[#6B7280]">{role}</p>}
+          <h3 className="truncate font-heading text-[18px] font-semibold leading-snug text-[#111827]">{name}</h3>
+          {role && <p className="truncate text-[18px] text-[#6B7280]">{role}</p>}
         </div>
       </footer>
     </article>
