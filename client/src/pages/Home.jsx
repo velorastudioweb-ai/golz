@@ -135,7 +135,7 @@ function PatientAvatar({ photo, color }) {
    bundle and always leads the home grid; the pinned events and the rest of the
    archive fill the remaining slots behind it. */
 const HOME_GALLERY_CAPTIONS = {
-  2: "RECOGNITION BY IISF 2020 — NEWSPAPER",
+  2: "Recognition by IISF 2020 — newspaper",
   3: "MOU with St Philomean's College — June 2015",
   4: "Awareness on food safety — April 2016",
   5: "Nov 2020 — SIG-PHN Pan India (IDA)",
