@@ -13,6 +13,9 @@ const schema = new mongoose.Schema(
     cover: { type: String, default: "" },
     order: { type: Number, default: 0 },
     published: { type: Boolean, default: true },
+    /* A section with no photos is hidden from the public filter bar unless the
+       administrator explicitly opts in here. */
+    showEmpty: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

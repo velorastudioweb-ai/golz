@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import GalleryItem from "../../models/GalleryItem.js";
 import GallerySection from "../../models/GallerySection.js";
+import GalleryTag from "../../models/GalleryTag.js";
 import ActivityLog from "../../models/ActivityLog.js";
 import { processUpload } from "../../middleware/upload.js";
 import { ensureMediaRecord, removeStoredFile } from "../../utils/media.js";
@@ -12,6 +13,27 @@ const router = express.Router();
 const validId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 const ITEM_FIELDS = ["type", "url", "thumb", "year", "eventName", "caption", "description", "alt", "order", "featured", "published"];
+
+/**
+ * Cleans a submitted tag list to unique trimmed names. Accepts an array or a
+ * single string (FormData sends repeated fields as an array, but a form with
+ * one tag can arrive as a plain string). Blank entries are dropped and the
+ * list is capped so a bad body can never store an unbounded array.
+ */
+export function cleanTags(value) {
+  const list = Array.isArray(value) ? value : value ? [value] : [];
+  const seen = new Set();
+  const out = [];
+  for (const raw of list) {
+    const name = String(raw || "").replace(/\s+/g, " ").trim();
+    if (!name || name.length > 60) continue;
+    const key = name.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(name);
+  }
+  return out.slice(0, 12);
+}
 
 /** Best-effort removal of the media record + stored file for one gallery item's URL. */
 async function removeItemMedia(url, thumb) {
@@ -53,6 +75,15 @@ async function sectionCounts() {
   return Object.fromEntries(counts.map((c) => [c._id, c.n]));
 }
 
+/** How many published+unpublished items currently carry each tag name. */
+async function tagCounts() {
+  const counts = await GalleryItem.aggregate([
+    { $unwind: "$tags" },
+    { $group: { _id: "$tags", n: { $sum: 1 } } },
+  ]);
+  return Object.fromEntries(counts.map((c) => [c._id, c.n]));
+}
+
 /** Resolve a section record by name (case-insensitive), returns _id or null. */
 async function findSectionId(name) {
   const section = await GallerySection.findOne({ name: new RegExp(`^${escapeRegExp(name || "General")}$`, "i") });
@@ -81,6 +112,7 @@ router.post("/sections", async (req, res) => {
       cover: req.body.cover || "",
       order: (max?.order ?? 0) + 1,
       published: req.body.published !== false,
+      showEmpty: req.body.showEmpty === true,
     });
     await log(req.user.name, "Gallery section added", `Added section "${name}"`);
     res.status(201).json(section);
@@ -111,6 +143,7 @@ router.put("/sections/:id", async (req, res) => {
     if ("eventDescriptions" in req.body) section.eventDescriptions = cleanEventDescriptions(req.body.eventDescriptions);
     if ("cover" in req.body) section.cover = req.body.cover || "";
     if ("published" in req.body) section.published = !!req.body.published;
+    if ("showEmpty" in req.body) section.showEmpty = !!req.body.showEmpty;
     await section.save();
     await log(req.user.name, "Gallery section updated", `Updated "${section.name}"`);
     res.json(section);
@@ -148,6 +181,112 @@ router.delete("/sections/:id", async (req, res) => {
   }
 });
 
+// ---------- Tags ----------
+
+router.get("/tags", async (_req, res) => {
+  try {
+    const [tags, map] = await Promise.all([GalleryTag.find().sort({ order: 1, createdAt: 1 }), tagCounts()]);
+    res.json(tags.map((t) => ({ ...t.toObject(), count: map[t.name] || 0 })));
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.post("/tags", async (req, res) => {
+  try {
+    const name = String(req.body.name || "").replace(/\s+/g, " ").trim();
+    if (!name) return res.status(400).json({ message: "Tag name is required" });
+    const exists = await GalleryTag.findOne({ name: { $regex: new RegExp(`^${escapeRegExp(name)}$`, "i") } });
+    if (exists) return res.status(400).json({ message: "A tag with this name already exists" });
+    const max = await GalleryTag.findOne().sort({ order: -1 });
+    const tag = await GalleryTag.create({
+      name,
+      blurb: String(req.body.blurb || "").trim().slice(0, 300),
+      order: (max?.order ?? 0) + 1,
+      published: req.body.published !== false,
+    });
+    await log(req.user.name, "Gallery tag added", `Added tag "${name}"`);
+    res.status(201).json(tag);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.put("/tags/:id", async (req, res) => {
+  try {
+    if (!validId(req.params.id)) return res.status(400).json({ message: "Invalid tag ID" });
+    const tag = await GalleryTag.findById(req.params.id);
+    if (!tag) return res.status(404).json({ message: "Tag not found" });
+    const oldName = tag.name;
+    if ("name" in req.body) {
+      const name = String(req.body.name || "").replace(/\s+/g, " ").trim();
+      if (!name) return res.status(400).json({ message: "Tag name is required" });
+      if (name !== oldName) {
+        const dup = await GalleryTag.findOne({
+          _id: { $ne: tag._id },
+          name: { $regex: new RegExp(`^${escapeRegExp(name)}$`, "i") },
+        });
+        if (dup) return res.status(400).json({ message: "A tag with this name already exists" });
+        tag.name = name;
+        /* Rename in place on every item that carried the old name, so image
+           associations survive a rename instead of silently detaching. */
+        await GalleryItem.updateMany({ tags: oldName }, [
+          {
+            $set: {
+              tags: {
+                $map: {
+                  input: "$tags",
+                  as: "t",
+                  in: { $cond: [{ $eq: ["$$t", oldName] }, name, "$$t"] },
+                },
+              },
+            },
+          },
+        ]);
+        await log(req.user.name, "Gallery tag renamed", `Renamed to "${name}"`);
+      }
+    }
+    if ("blurb" in req.body) tag.blurb = String(req.body.blurb || "").trim().slice(0, 300);
+    if ("published" in req.body) tag.published = !!req.body.published;
+    await tag.save();
+    await log(req.user.name, "Gallery tag updated", `Updated "${tag.name}"`);
+    res.json(tag);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.post("/tags/reorder", async (req, res) => {
+  try {
+    const ids = req.body.ids || [];
+    if (!Array.isArray(ids) || ids.some((id) => !validId(id))) {
+      return res.status(400).json({ message: "Invalid tag IDs" });
+    }
+    for (let i = 0; i < ids.length; i++) {
+      await GalleryTag.updateOne({ _id: ids[i] }, { $set: { order: i + 1 } });
+    }
+    await log(req.user.name, "Gallery tags reordered", "Changed tag order");
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.delete("/tags/:id", async (req, res) => {
+  try {
+    if (!validId(req.params.id)) return res.status(400).json({ message: "Invalid tag ID" });
+    const tag = await GalleryTag.findByIdAndDelete(req.params.id);
+    if (!tag) return res.status(404).json({ message: "Tag not found" });
+    /* Safe deletion: the tag is only detached from images. Photos, sections and
+       uploads are never removed by deleting a tag. */
+    await GalleryItem.updateMany({ tags: tag.name }, { $pull: { tags: tag.name } });
+    await log(req.user.name, "Gallery tag deleted", `Deleted "${tag.name}", detached from images`);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // ---------- Items ----------
 
 router.get("/", async (req, res) => {
@@ -164,7 +303,7 @@ router.get("/categories", async (_req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const data = { ...req.body };
+    const data = { ...req.body, tags: cleanTags(req.body.tags) };
     if (!data.url && !req.file) return res.status(400).json({ message: "Image or video is required" });
     if (req.file) {
       const isVideo = /^video\//.test(req.file.mimetype);
@@ -204,9 +343,11 @@ router.post("/upload", async (req, res) => {
       thumb: upload.thumb,
       category,
       gallerySectionId: await findSectionId(category),
+      eventName: String(req.body.eventName || "").trim(),
       caption: req.body.caption || "",
       description: req.body.description || "",
       alt: req.body.alt || "",
+      tags: cleanTags(req.body.tags),
       order: (maxOrder?.order ?? 0) + 1,
       published: true,
     });
@@ -229,6 +370,7 @@ router.put("/:id", async (req, res) => {
     for (const field of ITEM_FIELDS) {
       if (field in req.body) item[field] = req.body[field];
     }
+    if ("tags" in req.body) item.tags = cleanTags(req.body.tags);
     await item.save();
     await log(req.user.name, "Gallery item updated", `Updated ${item.type}`);
     res.json(item);

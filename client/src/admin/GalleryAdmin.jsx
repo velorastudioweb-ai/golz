@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   Upload, Trash2, Star, Eye, EyeOff, Pencil, CheckSquare, Square, Filter,
-  LayoutGrid, Plus, ChevronUp, ChevronDown, Save, X,
+  LayoutGrid, Plus, ChevronUp, ChevronDown, Save, X, Tag as TagIcon, Image as ImageIcon,
 } from "lucide-react";
 import api from "../api/client";
 import SEO from "../components/SEO";
@@ -10,7 +10,8 @@ import ImgFallback from "../components/ImgFallback";
 import { Modal, ConfirmDialog, Toast, Field, Toggle, EmptyState } from "./AdminUI";
 import { formatDate } from "../utils/helpers";
 
-const EMPTY_SECTION = { name: "", title: "", description: "", eventDescriptions: {}, published: true };
+const EMPTY_SECTION = { name: "", title: "", description: "", eventDescriptions: {}, published: true, showEmpty: false, cover: "" };
+const EMPTY_TAG = { name: "", blurb: "", published: true };
 
 export default function GalleryAdmin() {
   const [items, setItems] = useState(null);
@@ -25,10 +26,17 @@ export default function GalleryAdmin() {
   const [uploading, setUploading] = useState(0);
   const [busy, setBusy] = useState(false);
   const [uploadSection, setUploadSection] = useState("General");
+  const [uploadTags, setUploadTags] = useState([]);
+  const [uploadEventName, setUploadEventName] = useState("");
   const [sectionModal, setSectionModal] = useState(null);
   const [deletingSection, setDeletingSection] = useState(null);
   const [newEventTitle, setNewEventTitle] = useState("");
+  const [tags, setTags] = useState([]);
+  const [tagModal, setTagModal] = useState(null);
+  const [deletingTag, setDeletingTag] = useState(null);
+  const [coverUploading, setCoverUploading] = useState(false);
   const fileRef = useRef(null);
+  const coverRef = useRef(null);
 
   const load = () =>
     api.get("/admin/gallery").then(({ data }) => { setItems(data); setSelected([]); }).catch(() => {
@@ -41,9 +49,13 @@ export default function GalleryAdmin() {
       setUploadSection((cur) => (data.some((s) => s.name === cur) ? cur : (data[0]?.name ?? "General")));
     }).catch(() => showToast("Failed to load gallery sections", "error"));
 
+  const loadTags = () =>
+    api.get("/admin/gallery/tags").then(({ data }) => setTags(data)).catch(() => showToast("Failed to load gallery tags", "error"));
+
   useEffect(() => {
     load();
     loadSections();
+    loadTags();
   }, []);
 
   useEffect(() => {
@@ -65,6 +77,8 @@ export default function GalleryAdmin() {
       const form = new FormData();
       form.append("file", file);
       form.append("category", uploadSection);
+      form.append("eventName", uploadEventName);
+      for (const tag of uploadTags) form.append("tags", tag);
       try {
         await api.post("/admin/gallery/upload", form);
       } catch (err) {
@@ -72,8 +86,9 @@ export default function GalleryAdmin() {
       }
       setUploading((u) => u - 1);
     }
+    const suffix = uploadTags.length ? ` · tagged ${uploadTags.join(", ")}` : "";
     if (failed.length === 0) {
-      showToast(`Uploaded ${files.length} file${files.length > 1 ? "s" : ""} to ${uploadSection}`);
+      showToast(`Uploaded ${files.length} file${files.length > 1 ? "s" : ""} to ${uploadSection}${suffix}`);
     } else if (failed.length === files.length) {
       showToast(`Upload failed: ${failed[0].message}`, "error");
     } else {
@@ -81,6 +96,76 @@ export default function GalleryAdmin() {
     }
     load();
     loadSections();
+    loadTags();
+  };
+
+  const toggleUploadTag = (name) =>
+    setUploadTags((cur) => (cur.includes(name) ? cur.filter((t) => t !== name) : [...cur, name]));
+
+  const toggleEditTag = (name) =>
+    setEditing((cur) => {
+      if (!cur) return cur;
+      const list = Array.isArray(cur.tags) ? cur.tags : [];
+      return { ...cur, tags: list.includes(name) ? list.filter((t) => t !== name) : [...list, name] };
+    });
+
+  /* Tags manager */
+  const saveTag = async () => {
+    if (!tagModal?.name?.trim()) return showToast("Tag name is required", "error");
+    try {
+      if (tagModal._id) {
+        await api.put(`/admin/gallery/tags/${tagModal._id}`, tagModal);
+        showToast("Tag updated");
+      } else {
+        await api.post("/admin/gallery/tags", tagModal);
+        showToast("Tag added");
+      }
+      setTagModal(null);
+      loadTags();
+      load();
+    } catch (e) {
+      showToast(e.response?.data?.message || "Save failed", "error");
+    }
+  };
+
+  const moveTag = async (index, dir) => {
+    const next = [...tags];
+    const target = index + dir;
+    if (target < 0 || target >= next.length) return;
+    [next[index], next[target]] = [next[target], next[index]];
+    setTags(next);
+    try {
+      await api.post("/admin/gallery/tags/reorder", { ids: next.map((t) => t._id) });
+    } catch (err) {
+      showToast(err.response?.data?.message || "Reorder failed", "error");
+      loadTags();
+    }
+  };
+
+  const toggleTag = async (t) => {
+    try {
+      await api.put(`/admin/gallery/tags/${t._id}`, { published: !t.published });
+      showToast(t.published ? "Tag hidden from site" : "Tag visible on site");
+      loadTags();
+    } catch (err) {
+      showToast(err.response?.data?.message || "Update failed", "error");
+    }
+  };
+
+  const uploadCover = async (file) => {
+    if (!file || !sectionModal) return;
+    setCoverUploading(true);
+    const form = new FormData();
+    form.append("file", file);
+    try {
+      const { data } = await api.post("/admin/upload", form);
+      setSectionModal((m) => (m ? { ...m, cover: data.url } : m));
+      showToast("Cover uploaded — remember to save the section");
+    } catch (err) {
+      showToast(err.response?.data?.message || "Cover upload failed", "error");
+    } finally {
+      setCoverUploading(false);
+    }
   };
 
   const toggle = async (item, field) => {
@@ -198,7 +283,7 @@ export default function GalleryAdmin() {
             className="btn-primary !px-5 !py-2.5 !text-sm disabled:opacity-60"
             title={sections.length === 0 ? "Please select a gallery section first" : `Upload to ${uploadSection}`}
           >
-            <Upload size={16} /> {uploading > 0 ? `Uploading ${uploading}…` : `Upload to ${uploadSection}`}
+            <Upload size={16} /> {uploading > 0 ? `Uploading ${uploading}…` : `Add Images`}
           </button>
           <input ref={fileRef} type="file" multiple accept="image/*,video/*" className="hidden"
             onChange={(e) => { const files = Array.from(e.target.files || []); if (files.length) uploadFiles(files); e.target.value = ""; }} />
@@ -207,12 +292,52 @@ export default function GalleryAdmin() {
 
       {sections.length === 0 ? (
         <p className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-          Please select a gallery section first — add a section below, then choose it in the dropdown to upload images into it.
+          Add a section below first, then choose it in the dropdown to upload images into it.
         </p>
       ) : (
-        <p className="mb-6 rounded-xl border border-primary/15 bg-primary/5 px-4 py-3 text-sm text-primary">
-          Selected section: <strong>{uploadSection}</strong>
-        </p>
+        <div className="mb-6 rounded-2xl border border-primary/15 bg-primary/5 p-4">
+          <p className="text-sm text-primary">
+            Adding to: <strong>{uploadSection}</strong>
+          </p>
+          <div className="mt-3 grid gap-3 lg:grid-cols-2">
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-charcoal/60">
+              Event name (optional)
+              <input
+                className="input !py-2 !text-sm"
+                value={uploadEventName}
+                onChange={(e) => setUploadEventName(e.target.value)}
+                placeholder="e.g. Annual Cultural Fest"
+              />
+            </label>
+            <div className="flex flex-col gap-1.5 text-xs font-semibold text-charcoal/60">
+              Tags (optional, applied to every file in this upload)
+              {tags.length ? (
+                <div className="flex flex-wrap gap-1.5">
+                  {tags.map((t) => {
+                    const active = uploadTags.includes(t.name);
+                    return (
+                      <button
+                        key={t._id}
+                        type="button"
+                        onClick={() => toggleUploadTag(t.name)}
+                        className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                          active ? "border-primary bg-primary text-white" : "border-primary/25 bg-white text-primary hover:bg-primary/5"
+                        }`}
+                      >
+                        {t.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <span className="font-normal text-charcoal/45">No tags yet — add some in the Tags section below.</span>
+              )}
+            </div>
+          </div>
+          <p className="mt-3 text-xs text-charcoal/50">
+            Choose the year/section, add an optional event name and tags, then click Add Images and pick one or many files.
+          </p>
+        </div>
       )}
 
       {/* Sections manager */}
@@ -252,8 +377,52 @@ export default function GalleryAdmin() {
                   <button onClick={() => toggleSection(s)} className="rounded-lg bg-gray-100 p-1.5 text-charcoal/60 transition hover:bg-primary hover:text-white" aria-label="Show/hide section">
                     {s.published ? <Eye size={14} /> : <EyeOff size={14} />}
                   </button>
-                  <button onClick={() => setSectionModal({ ...s, eventDescriptions: { ...(s.eventDescriptions || {}) } })} className="rounded-lg bg-gray-100 p-1.5 text-charcoal/60 transition hover:bg-primary hover:text-white" aria-label="Edit section"><Pencil size={14} /></button>
+                  <button onClick={() => setSectionModal({ ...s, eventDescriptions: { ...(s.eventDescriptions || {}) }, showEmpty: !!s.showEmpty, published: s.published !== false })} className="rounded-lg bg-gray-100 p-1.5 text-charcoal/60 transition hover:bg-primary hover:text-white" aria-label="Edit section"><Pencil size={14} /></button>
                   <button onClick={() => setDeletingSection(s)} className="rounded-lg bg-red-50 p-1.5 text-red-500 transition hover:bg-red-500 hover:text-white" aria-label="Delete section"><Trash2 size={14} /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Tags manager */}
+      <div className="card mb-6 p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h3 className="flex items-center gap-2 font-heading text-base font-bold text-charcoal">
+            <TagIcon size={17} className="text-primary" /> Gallery Tags
+          </h3>
+          <button onClick={() => setTagModal({ ...EMPTY_TAG })} className="btn-primary !px-4 !py-2 !text-sm">
+            <Plus size={15} /> Add Tag
+          </button>
+        </div>
+        <p className="mb-3 text-xs text-charcoal/50">
+          These are the “Type” filters visitors see on the gallery page. Renaming a tag updates every image that uses it;
+          deleting one only removes the tag — the images are kept.
+        </p>
+        {tags.length === 0 ? (
+          <p className="text-sm text-charcoal/50">No tags yet — add one, then assign it to images here or while uploading.</p>
+        ) : (
+          <div className="space-y-2">
+            {tags.map((t, i) => (
+              <div key={t._id} className={`flex flex-wrap items-center gap-3 rounded-2xl border p-3 ${t.published ? "border-gray-100 bg-white" : "border-dashed border-charcoal/20 bg-charcoal/[0.03] opacity-70"}`}>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"><TagIcon size={15} /></span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-charcoal">{t.name}</p>
+                  <p className="truncate text-xs text-charcoal/45">
+                    {t.count} image{t.count === 1 ? "" : "s"}
+                    {t.blurb ? ` • ${t.blurb}` : ""}
+                    {!t.published && " • hidden"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button onClick={() => moveTag(i, -1)} disabled={i === 0} className="rounded-lg bg-gray-100 p-1.5 text-charcoal/60 transition hover:bg-primary hover:text-white disabled:opacity-30" aria-label="Move up"><ChevronUp size={14} /></button>
+                  <button onClick={() => moveTag(i, 1)} disabled={i === tags.length - 1} className="rounded-lg bg-gray-100 p-1.5 text-charcoal/60 transition hover:bg-primary hover:text-white disabled:opacity-30" aria-label="Move down"><ChevronDown size={14} /></button>
+                  <button onClick={() => toggleTag(t)} className="rounded-lg bg-gray-100 p-1.5 text-charcoal/60 transition hover:bg-primary hover:text-white" aria-label="Show/hide tag">
+                    {t.published ? <Eye size={14} /> : <EyeOff size={14} />}
+                  </button>
+                  <button onClick={() => setTagModal({ ...t })} className="rounded-lg bg-gray-100 p-1.5 text-charcoal/60 transition hover:bg-primary hover:text-white" aria-label="Edit tag"><Pencil size={14} /></button>
+                  <button onClick={() => setDeletingTag(t)} className="rounded-lg bg-red-50 p-1.5 text-red-500 transition hover:bg-red-500 hover:text-white" aria-label="Delete tag"><Trash2 size={14} /></button>
                 </div>
               </div>
             ))}
@@ -347,6 +516,29 @@ export default function GalleryAdmin() {
                     <input className="input" value={editing.eventName || ""} onChange={(e) => setEditing({ ...editing, eventName: e.target.value })} placeholder="e.g. Annual Cultural Fest" />
                   </Field>
                 </div>
+                <Field label="Tags" hint="Shown as the “Type” filters on the gallery page.">
+                  {tags.length ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {tags.map((t) => {
+                        const active = (editing.tags || []).includes(t.name);
+                        return (
+                          <button
+                            key={t._id}
+                            type="button"
+                            onClick={() => toggleEditTag(t.name)}
+                            className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                              active ? "border-primary bg-primary text-white" : "border-primary/25 bg-white text-primary hover:bg-primary/5"
+                            }`}
+                          >
+                            {t.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <span className="text-xs text-charcoal/45">No tags yet — create them in the Gallery Tags section.</span>
+                  )}
+                </Field>
                 <div className="flex gap-6">
                   <label className="flex items-center gap-2.5 text-sm font-medium text-charcoal/75">
                     <Toggle checked={editing.published} onChange={(published) => setEditing({ ...editing, published })} label="Published" /> Published
@@ -383,6 +575,26 @@ export default function GalleryAdmin() {
             </Field>
             <Field label="Description" hint="Intro shown under this section's title on the gallery page; leave blank to show nothing.">
               <textarea className="input resize-none" rows={3} value={sectionModal.description} onChange={(e) => setSectionModal({ ...sectionModal, description: e.target.value })} placeholder="Short intro for this section…" />
+            </Field>
+
+            <Field label="Cover image" hint="Optional thumbnail shown in the admin list and used as the section's cover.">
+              <div className="flex items-center gap-3">
+                {sectionModal.cover ? (
+                  <ImgFallback src={sectionModal.cover} alt="" className="h-12 w-16 shrink-0 rounded-lg object-cover" fallbackClassName="h-12 w-16 shrink-0 rounded-lg" />
+                ) : (
+                  <span className="flex h-12 w-16 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-charcoal/40"><ImageIcon size={16} /></span>
+                )}
+                <button type="button" onClick={() => coverRef.current?.click()} disabled={coverUploading} className="btn-outline !px-4 !py-2 !text-sm disabled:opacity-60">
+                  <Upload size={14} /> {coverUploading ? "Uploading…" : sectionModal.cover ? "Replace cover" : "Upload cover"}
+                </button>
+                {sectionModal.cover ? (
+                  <button type="button" onClick={() => setSectionModal({ ...sectionModal, cover: "" })} className="text-xs font-semibold text-red-500 hover:underline">
+                    Remove
+                  </button>
+                ) : null}
+              </div>
+              <input ref={coverRef} type="file" accept="image/*" className="hidden"
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadCover(f); e.target.value = ""; }} />
             </Field>
 
             <div className="border-t border-gray-100 pt-4">
@@ -445,9 +657,17 @@ export default function GalleryAdmin() {
               </div>
             </div>
 
-            <label className="flex items-center gap-2.5 text-sm font-medium text-charcoal/75">
-              <Toggle checked={sectionModal.published} onChange={(published) => setSectionModal({ ...sectionModal, published })} label="Visible on site" /> Visible on site
-            </label>
+            <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
+              <label className="flex items-center gap-2.5 text-sm font-medium text-charcoal/75">
+                <Toggle checked={sectionModal.published} onChange={(published) => setSectionModal({ ...sectionModal, published })} label="Visible on site" /> Visible on site
+              </label>
+              <label className="flex items-center gap-2.5 text-sm font-medium text-charcoal/75" title="Show this section in the gallery filters even when it has no photos yet.">
+                <Toggle checked={sectionModal.showEmpty} onChange={(showEmpty) => setSectionModal({ ...sectionModal, showEmpty })} label="Show when empty" /> Show when empty
+              </label>
+            </div>
+            <p className="-mt-2 text-xs text-charcoal/45">
+              “Show when empty” keeps this section visible in the public filters even with no photos, letting you set it up before uploading.
+            </p>
             <div className="flex justify-end gap-2.5">
               <button onClick={closeSectionModal} className="btn-outline !px-5 !py-2.5 !text-sm"><X size={15} /> Cancel</button>
               <button onClick={saveSection} className="btn-primary !px-5 !py-2.5 !text-sm"><Save size={15} /> Save Section</button>
@@ -511,6 +731,59 @@ export default function GalleryAdmin() {
           setDeletingSection(null);
           setBusy(false);
           loadSections();
+          load();
+        }}
+      />
+      {/* Tag add/edit modal */}
+      <Modal open={!!tagModal} onClose={() => setTagModal(null)} title={tagModal?._id ? "Edit tag" : "Add tag"}>
+        {tagModal && (
+          <div className="space-y-5">
+            <Field label="Name *" hint="Shown as the filter chip on the public gallery page.">
+              <input
+                className="input"
+                value={tagModal.name}
+                onChange={(e) => setTagModal({ ...tagModal, name: e.target.value })}
+                placeholder="e.g. Workshops"
+                autoFocus
+              />
+            </Field>
+            <Field label="Description" hint="Optional — shown when a visitor hovers the chip.">
+              <textarea
+                className="input resize-none"
+                rows={2}
+                value={tagModal.blurb || ""}
+                onChange={(e) => setTagModal({ ...tagModal, blurb: e.target.value })}
+                placeholder="Short description of this tag…"
+              />
+            </Field>
+            <label className="flex items-center gap-2.5 text-sm font-medium text-charcoal/75">
+              <Toggle checked={tagModal.published !== false} onChange={(published) => setTagModal({ ...tagModal, published })} label="Visible on site" /> Visible on site
+            </label>
+            <div className="flex justify-end gap-2.5">
+              <button onClick={() => setTagModal(null)} className="btn-outline !px-5 !py-2.5 !text-sm"><X size={15} /> Cancel</button>
+              <button onClick={saveTag} className="btn-primary !px-5 !py-2.5 !text-sm"><Save size={15} /> Save Tag</button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      <ConfirmDialog
+        open={!!deletingTag}
+        onClose={() => { if (!busy) setDeletingTag(null); }}
+        title={`Delete tag "${deletingTag?.name}"?`}
+        text="The tag is removed from every image. The photos themselves are not deleted."
+        busy={busy}
+        onConfirm={async () => {
+          setBusy(true);
+          try {
+            await api.delete(`/admin/gallery/tags/${deletingTag._id}`);
+            showToast("Tag deleted");
+          } catch (err) {
+            showToast(err.response?.data?.message || "Delete failed", "error");
+          }
+          setDeletingTag(null);
+          setBusy(false);
+          loadTags();
           load();
         }}
       />

@@ -10,7 +10,7 @@ import GalleryFilters from "../components/gallery/GalleryFilters";
 import GalleryGrid from "../components/gallery/GalleryGrid";
 import GalleryEmptyState from "../components/gallery/GalleryEmptyState";
 import { archiveItems, deriveSections, loadGallery, compareFolders } from "../gallery/galleryApi";
-import { eventTypesIn } from "../gallery/eventTypes";
+import { typesIn, itemMatchesType } from "../gallery/eventTypes";
 
 const SEO_TITLE = "Gallery | GOLZ \u2013 Giggles of Livez";
 const SEO_DESCRIPTION =
@@ -24,6 +24,7 @@ export default function Gallery() {
      CMS records are merged in afterwards when the request resolves. */
   const [items, setItems] = useState(() => archiveItems());
   const [sections, setSections] = useState(() => deriveSections(archiveItems()));
+  const [tags, setTags] = useState([]);
   const [section, setSection] = useState("All");
   const [type, setType] = useState("All");
   const [viewer, setViewer] = useState(null);
@@ -36,10 +37,11 @@ export default function Gallery() {
   useEffect(() => {
     let alive = true;
 
-    loadGallery().then(({ items: loaded, sections: loadedSections, adminCount, error }) => {
+    loadGallery().then(({ items: loaded, sections: loadedSections, tags: loadedTags, adminCount, error }) => {
       if (!alive) return;
       setItems(loaded);
       setSections(loadedSections);
+      setTags(loadedTags || []);
       if (error) console.error("[gallery] CMS gallery unavailable, showing the bundled archive:", error.message);
       else if (adminCount > 0) console.info(`[gallery] merged ${adminCount} CMS upload(s) into the archive`);
     });
@@ -49,36 +51,43 @@ export default function Gallery() {
     };
   }, []);
 
+  /* Only the published, admin-managed tags become type chips. */
+  const tagNames = useMemo(() => tags.filter((t) => t.published !== false).map((t) => t.name), [tags]);
+
   /* Description-only sections stay in `sections` for blurbs but never become a
-     filter chip, and only published groups with photos are offered as filters. */
+     filter chip. A section is offered when it holds photos, or when the
+     administrator explicitly enabled an empty one. */
   const visibleSections = useMemo(
-    () => sections.filter((s) => s.published !== false && s.count > 0),
+    () => sections.filter((s) => s.published !== false && (s.count > 0 || s.showEmpty)),
     [sections]
   );
 
-  const types = useMemo(() => (items?.length ? eventTypesIn(items) : []), [items]);
+  const types = useMemo(() => (items?.length ? typesIn(items, tags) : []), [items, tags]);
 
   /* Section and type are independent axes, so the two filter rows combine. */
   const filtered = useMemo(() => {
     if (!items) return [];
     return items.filter((item) => {
       const bySection = section === "All" || item.section === section;
-      const byType =
-        type === "All" ||
-        (() => {
-          const haystack = `${item.eventName ?? ""} ${item.caption ?? ""}`;
-          return eventTypesIn([item])[0]?.key === type;
-        })();
+      const byType = itemMatchesType(item, type, tagNames);
       return bySection && byType;
     });
-  }, [items, section, type]);
+  }, [items, section, type, tagNames]);
 
   const isEmpty = items.length === 0;
 
   /* Photos are laid out as year sections, and each year as its events, so a
      visitor can find a specific occasion instead of scrolling one long wall.
+     Sections follow the administrator's configured order (newest-first by
+     default); the bundled archive's own year order breaks ties in offline mode.
      Every tile keeps its position in the flat list, which is what the lightbox
      walks through, so next/previous follow the same order the page shows. */
+  const sectionRank = useMemo(() => {
+    const map = new Map();
+    sections.forEach((s, i) => map.set(s.name, Number.isFinite(s.order) ? s.order : i));
+    return map;
+  }, [sections]);
+
   const groups = useMemo(() => {
     const bySection = new Map();
 
@@ -90,7 +99,12 @@ export default function Gallery() {
     });
 
     return [...bySection.keys()]
-      .sort(compareFolders)
+      .sort((a, b) => {
+        const ra = sectionRank.has(a) ? sectionRank.get(a) : Infinity;
+        const rb = sectionRank.has(b) ? sectionRank.get(b) : Infinity;
+        if (ra !== rb) return ra - rb;
+        return compareFolders(a, b);
+      })
       .map((section) => {
         const events = [...bySection.get(section).entries()];
         return {
@@ -99,7 +113,7 @@ export default function Gallery() {
           events: events.map(([event, items]) => ({ event, items })),
         };
       });
-  }, [filtered]);
+  }, [filtered, sectionRank]);
 
   /* Hero statistics come from the records this page renders — never from other
      collections. Photographs counts unique published image URLs across the

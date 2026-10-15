@@ -12,6 +12,12 @@ const schema = new mongoose.Schema(
     caption: { type: String, default: "" },
     description: { type: String, default: "" },
     alt: { type: String, default: "" },
+    /* Tag names assigned in the admin (managed via GalleryTag). Empty means the
+       public page classifies the photo with its caption-wording fallback. */
+    tags: { type: [String], default: [] },
+    /* "archive" marks a photo imported from the bundled /media/gallery library;
+       blank marks an administrator's own upload. Never shown publicly. */
+    origin: { type: String, default: "" },
     order: { type: Number, default: 0 },
     featured: { type: Boolean, default: false },
     published: { type: Boolean, default: true },

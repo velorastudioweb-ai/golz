@@ -35,6 +35,10 @@ export function toGalleryItem(raw, index = 0) {
     year,
     eventName,
     caption,
+    /* Tag names assigned in the admin. Empty means the public page classifies
+       the photo from its caption wording instead. */
+    tags: Array.isArray(raw.tags) ? raw.tags.map(text).filter(Boolean) : [],
+    origin: text(raw.origin),
     /* True only when the caption adds something the title does not say. */
     hasOwnCaption: Boolean(caption) && caption !== eventName,
     alt: text(raw.alt) || caption || eventName || text(raw.category) || "GOLZ nutrition gallery image",
@@ -97,6 +101,7 @@ export function toArchiveItem(entry, index = 0) {
     hasOwnCaption: Boolean(text(entry.caption)) && text(entry.caption) !== event,
     alt: text(entry.alt) || text(entry.caption) || event,
     order: Number.isFinite(index) ? index : 0,
+    tags: [],
     /* Original archive path, kept only so duplicates can be recognised. */
     sourceFile: text(entry.file) || text(entry.source).split("/").pop() || "",
     origin: "archive",
@@ -147,16 +152,21 @@ const basenameOf = (value) => decodeURIComponent(text(value).split("?")[0].split
  */
 const LEGACY_ARCHIVE_PATH = /\/gallery\/archive\//i;
 
+/** Gallery order: newest year first, then event, then file — the order the
+    lightbox walks and the order the page renders. */
+const sortGallery = (a, b) =>
+  compareFolders(a.section, b.section) ||
+  (a.eventName || "").localeCompare(b.eventName || "", undefined, { numeric: true }) ||
+  String(a.id).localeCompare(String(b.id), undefined, { numeric: true });
+
 /**
  * Merges the generated archive index with CMS records.
  *
- * The archive is authoritative for the photo library, so a CMS record is dropped
- * when it is a re-upload of an archive photo, detected either by the legacy
- * import path or by matching the original filename/caption in the same folder.
- *
- * Both checks are deliberately one-directional and per-photo: archive entries are
- * never dropped, and event names are never used as a match key, so a genuine
- * new upload added to an existing event still appears.
+ * Used when the CMS is unreachable: the archive is authoritative for the photo
+ * library, so a CMS record is dropped when it is a re-upload of an archive photo,
+ * detected either by the legacy import path or by matching the original
+ * filename/caption in the same folder. Both checks are one-directional and
+ * per-photo, so a genuine new upload added to an existing event still appears.
  */
 export function mergeGallery(archive = [], admin = []) {
   const covered = new Set();
@@ -171,15 +181,34 @@ export function mergeGallery(archive = [], admin = []) {
     return !covered.has(`${item.section}::${file}`) && !covered.has(`${item.section}::${signature(item.caption)}`);
   });
 
-  /* Sorted to match the order the page renders — newest year first, then event,
-     then file. The lightbox walks this same list, so pressing "next" moves to
-     the photo the visitor is looking at rather than jumping around the archive. */
-  return [...archive, ...extra].sort(
-    (a, b) =>
-      compareFolders(a.section, b.section) ||
-      (a.eventName || "").localeCompare(b.eventName || "", undefined, { numeric: true }) ||
-      String(a.id).localeCompare(String(b.id), undefined, { numeric: true })
+  return [...archive, ...extra].sort(sortGallery);
+}
+
+/**
+ * Online merge: the database is authoritative.
+ *
+ * Every archive photo is imported as a managed record, so the CMS copy carries
+ * the administrator's latest tags, titles and filing. A bundled archive entry is
+ * only added when no CMS record covers it (e.g. a photo added to the filesystem
+ * before its import ran), which keeps the library complete without ever
+ * double-listing a photo.
+ */
+export function preferDatabase(archive = [], db = []) {
+  const covered = new Set();
+  for (const item of db) {
+    covered.add(item.image);
+    covered.add(`${item.section}::${signature(basenameOf(item.image))}`);
+    covered.add(`${item.section}::${signature(item.caption)}`);
+  }
+
+  const extras = archive.filter(
+    (item) =>
+      !covered.has(item.image) &&
+      !covered.has(`${item.section}::${signature(item.sourceFile)}`) &&
+      !covered.has(`${item.section}::${signature(item.caption)}`)
   );
+
+  return [...db, ...extras].sort(sortGallery);
 }
 
 /** Newest year first, and the unfiled folder last. */
@@ -193,41 +222,46 @@ const compareFolders = (a, b) => folderRank(b) - folderRank(a) || a.localeCompar
 export { compareFolders, folderRank };
 
 /**
- * Builds filter sections from whatever is actually on screen, so a year can
- * never be listed with a count of zero and a populated year can never be
- * missing from the bar.
+ * Builds filter sections from the admin configuration, falling back to the
+ * photos actually on screen when the CMS is unreachable.
+ *
+ * With a live CMS, only sections the administrator created are returned — a year
+ * appears because it was configured, never because a photo mentioned it. In
+ * offline mode there is no configuration to read, so the bundled archive's own
+ * folders become the sections and nothing is lost.
  */
 export function deriveSections(items = [], apiSections = []) {
-  const labels = new Map(
-    apiSections
-      .filter((s) => s?.name)
-      .map((s) => ({
-        name: s.name,
-        title: s.title || s.name,
-        description: s.description || "",
-        eventDescriptions: normalizeEventDescriptions(s.eventDescriptions),
-        published: s.published !== false,
-      }))
-      .map((s) => [s.name, s])
-  );
-
   const counts = new Map();
   for (const item of items) counts.set(item.section, (counts.get(item.section) || 0) + 1);
 
-  /* Sections that carry a description but hold no photos are kept in the list
-     (count 0) so an event blurb written in the CMS can still be found; the
-     page hides anything with a zero count from the filter bar. */
-  const describedOnly = apiSections.filter((s) => s?.name && !counts.has(s.name) && s.description).map((s) => s.name);
+  const configured = apiSections.filter((s) => s?.name);
 
-  return [...counts.keys()].sort(compareFolders).concat(describedOnly).map((name) => ({
-    name,
-    title: labels.get(name)?.title || name,
+  if (!configured.length) {
+    return [...counts.keys()].sort(compareFolders).map((name) => ({
+      name,
+      title: name,
+      description: "",
+      eventDescriptions: {},
+      cover: "",
+      order: 999,
+      showEmpty: false,
+      published: true,
+      count: counts.get(name) || 0,
+    }));
+  }
+
+  return configured.map((s) => ({
+    name: s.name,
+    title: text(s.title) || s.name,
     /* Optional blurb written in the CMS; empty means "show nothing". */
-    description: labels.get(name)?.description || "",
+    description: text(s.description),
     /* Optional blurbs for the event subsections under this section. */
-    eventDescriptions: labels.get(name)?.eventDescriptions || {},
-    published: labels.has(name) ? labels.get(name).published : true,
-    count: counts.get(name) || 0,
+    eventDescriptions: normalizeEventDescriptions(s.eventDescriptions),
+    cover: text(s.cover),
+    order: Number.isFinite(s.order) ? s.order : 999,
+    showEmpty: !!s.showEmpty,
+    published: s.published !== false,
+    count: counts.get(s.name) || 0,
   }));
 }
 
@@ -286,10 +320,29 @@ function extractSections(payload) {
       eventDescriptions: normalizeEventDescriptions(s.eventDescriptions),
       cover: text(s.cover),
       order: Number.isFinite(s.order) ? s.order : 999,
+      showEmpty: !!s.showEmpty,
       published: s.published !== false,
       count: Number.isFinite(s.count) ? s.count : 0,
     }))
     .filter((s) => s.name);
+}
+
+/**
+ * The administrator-managed tags that may appear as public type chips. An empty
+ * list (older API, or none configured) tells the page to fall back to its
+ * caption classifier.
+ */
+function extractTags(payload) {
+  const raw = Array.isArray(payload?.tags) ? payload.tags : Array.isArray(payload) ? payload : [];
+  return raw
+    .filter((t) => t && typeof t === "object" && text(t.name))
+    .map((t, index) => ({
+      name: text(t.name),
+      blurb: text(t.blurb),
+      order: Number.isFinite(t.order) ? t.order : index,
+      published: t.published !== false,
+      count: Number.isFinite(t.count) ? t.count : 0,
+    }));
 }
 
 function extractCategories(payload) {
@@ -343,31 +396,36 @@ async function loadAdminItems() {
     let items = extractItems(data);
     let sections = extractSections(data);
     let categories = extractCategories(data);
+    let tags = extractTags(data);
 
     /* Older deployments may still answer without the bundled metadata. */
-    const [sectionPatch, categoryPatch] = await Promise.all([
+    const [sectionPatch, categoryPatch, tagPatch] = await Promise.all([
       sections.length ? Promise.resolve(null) : api.get("/public/gallery/sections").catch(() => null),
       categories.length ? Promise.resolve(null) : api.get("/public/gallery/categories").catch(() => null),
+      Array.isArray(data?.tags) ? Promise.resolve(null) : api.get("/public/gallery/tags").catch(() => null),
     ]);
     if (sectionPatch) sections = extractSections(sectionPatch.data);
     if (categoryPatch) categories = extractCategories(categoryPatch.data);
+    if (tagPatch) tags = extractTags(tagPatch.data);
 
     if (!items.length) {
       return {
         items: await loadFallbackItems(),
         sections,
         categories,
+        tags,
         source: "fallback",
         error: new Error("Gallery API returned no usable records"),
       };
     }
 
-    return { items, sections, categories, source: "api", error: null };
+    return { items, sections, categories, tags, source: "api", error: null };
   } catch (err) {
     return {
       items: await loadFallbackItems(),
       sections: extractSections(null),
       categories: [],
+      tags: [],
       source: "fallback",
       error: err,
     };
@@ -377,20 +435,21 @@ async function loadAdminItems() {
 /**
  * Loads the whole gallery.
  *
- * ARCHIVE : the build-generated index — every photo in `public/`, always present,
- *           needs no database and cannot be broken by an outage.
- * ADMIN   : CMS records for anything uploaded or curated through the admin,
- *           fetched live with the bundled snapshot as a backup.
+ * ONLINE : the database is the single source of truth. Every archive photo was
+ *          imported as a managed record, so `preferDatabase` renders the CMS
+ *          copies (with the administrator's latest tags and filing) and only
+ *          adds a bundled entry when no CMS record covers it.
+ * OFFLINE: the bundled archive carries the page on its own, with the bundled
+ *          snapshot of older CMS records merged in exactly as before.
  *
- * The two are merged by `mergeGallery`, which drops CMS duplicates of archive
- * photos. `source` reports which admin channel answered so the page can show a
- * small notice without ever hiding real content, and the fallback never writes
- * to the database.
+ * `source` reports which admin channel answered so the page can log a notice
+ * without ever hiding real content, and the fallback never writes to the
+ * database.
  */
 export async function loadGallery() {
   const [archive, admin] = await Promise.all([loadArchiveItems(), loadAdminItems()]);
 
-  const items = mergeGallery(archive, admin.items);
+  const items = admin.source === "api" ? preferDatabase(archive, admin.items) : mergeGallery(archive, admin.items);
   const sections = deriveSections(items, admin.sections);
 
   /* Only the admin half can be missing; the archive is bundled with the build. */
@@ -398,6 +457,7 @@ export async function loadGallery() {
     items,
     sections,
     categories: admin.categories,
+    tags: admin.tags || [],
     source: admin.source,
     error: admin.error,
     archiveCount: archive.length,

@@ -4,6 +4,7 @@ import Service from "../models/Service.js";
 import Blog from "../models/Blog.js";
 import GalleryItem from "../models/GalleryItem.js";
 import GallerySection from "../models/GallerySection.js";
+import GalleryTag from "../models/GalleryTag.js";
 import Testimonial from "../models/Testimonial.js";
 import ContactMessage from "../models/ContactMessage.js";
 import Appointment from "../models/Appointment.js";
@@ -25,6 +26,21 @@ const formLimiter = rateLimit({
 async function getSetting(key, fallback = {}) {
   const doc = await Setting.findOne({ key });
   return doc ? doc.value : fallback;
+}
+
+/**
+ * The administrator-managed gallery tags that may appear as public filter
+ * chips, newest configuration order preserved. Only published tags are
+ * returned; an empty list tells the frontend to fall back to its caption
+ * classifier, which is how older deployments keep working.
+ */
+async function publishedGalleryTags() {
+  const [tags, counts] = await Promise.all([
+    GalleryTag.find({ published: true }).sort({ order: 1, createdAt: 1 }).lean(),
+    GalleryItem.aggregate([{ $unwind: "$tags" }, { $group: { _id: "$tags", n: { $sum: 1 } } }]),
+  ]);
+  const map = Object.fromEntries(counts.map((c) => [c._id, c.n]));
+  return tags.map((t) => ({ name: t.name, blurb: t.blurb || "", order: t.order || 0, count: map[t.name] || 0 }));
 }
 
 /**
@@ -88,11 +104,12 @@ router.get("/gallery", asyncHandler(async (req, res) => {
      it alone interleaves the years and scrambles the gallery. */
   const GALLERY_SORT = { category: 1, order: 1, featured: -1, createdAt: 1 };
 
-  const [items, total, sections, categories] = await Promise.all([
+  const [items, total, sections, categories, tags] = await Promise.all([
     GalleryItem.find(filter).sort(GALLERY_SORT).skip((page - 1) * limit).limit(limit),
     GalleryItem.countDocuments(filter),
     GallerySection.find().sort({ order: 1, createdAt: 1 }).lean(),
     GalleryItem.distinct("category", { published: true }),
+    publishedGalleryTags(),
   ]);
 
   const counts = await GalleryItem.aggregate([
@@ -107,42 +124,32 @@ router.get("/gallery", asyncHandler(async (req, res) => {
     page,
     pages: Math.max(1, Math.ceil(total / limit)),
     categories,
-    /* Sections with no published photos are omitted: a filter chip that can only
-       ever show an empty result is worse than no chip at all. A section that
-       carries a description is kept even with no photos — it exists only to
-       place that text under an event or year title. */
+    tags,
+    /* Sections with no published photos are omitted, unless the administrator
+       ticked "show empty" on that section. A section that carries a description
+       is kept even with no photos — it exists only to place that text under an
+       event or year title. */
     sections: sections
       .map((s) => ({ ...s, count: countByCategory[s.name] || 0 }))
-      .filter((s) => s.count > 0 || Boolean(s.description)),
+      .filter((s) => s.count > 0 || s.showEmpty || Boolean(s.description)),
   });
+}));
+
+router.get("/gallery/tags", asyncHandler(async (_req, res) => {
+  res.json(await publishedGalleryTags());
 }));
 
 router.get("/gallery/categories", asyncHandler(async (_req, res) => {
   res.json(await GalleryItem.distinct("category", { published: true }));
 }));
 
+/**
+ * Section list only (older callers / partial patch requests). Sections are
+ * NEVER created here: a year is displayed because an administrator configured
+ * it, not because a photo happened to reference an unknown group.
+ */
 router.get("/gallery/sections", asyncHandler(async (_req, res) => {
-  let sections = await GallerySection.find().sort({ order: 1, createdAt: 1 }).lean();
-
-  /* Self-heal: any category used by a published item must have a section row so
-     the filter bar cannot lose a group of photos. `name` is unique, so this is
-     an upsert rather than insertMany — concurrent cold starts would otherwise
-     collide on the unique index. */
-  const cats = await GalleryItem.distinct("category", { published: true });
-  const known = new Set(sections.map((s) => s.name));
-  const missing = cats.filter((c) => c && !known.has(c));
-  if (missing.length) {
-    await GallerySection.bulkWrite(
-      missing.map((name) => ({
-        updateOne: {
-          filter: { name },
-          update: { $setOnInsert: { name, title: name, published: true } },
-          upsert: true,
-        },
-      }))
-    );
-    sections = await GallerySection.find().sort({ order: 1, createdAt: 1 }).lean();
-  }
+  const sections = await GallerySection.find().sort({ order: 1, createdAt: 1 }).lean();
 
   const counts = await GalleryItem.aggregate([
     { $match: { published: true } },
@@ -152,7 +159,7 @@ router.get("/gallery/sections", asyncHandler(async (_req, res) => {
   res.json(
     sections
       .map((s) => ({ ...s, count: map[s.name] || 0 }))
-      .filter((s) => s.count > 0 || Boolean(s.description))
+      .filter((s) => s.count > 0 || s.showEmpty || Boolean(s.description))
   );
 }));
 
