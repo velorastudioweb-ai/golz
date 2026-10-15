@@ -17,7 +17,7 @@ const CATEGORIES = [
   { id: "performance", label: "4 · Performance & Precision" },
 ];
 
-const EMPTY = { title: "", icon: "Sparkles", emoji: "", image: "", category: "", shortDesc: "", description: "", forWho: "", benefits: [], planCovers: [], credibility: "", suitableFor: [], duration: "", price: null, featured: false, published: true };
+const EMPTY = { title: "", icon: "Sparkles", image: "", category: "", shortDesc: "", description: "", forWho: "", benefits: [], planCovers: [], credibility: "", suitableFor: [], duration: "", price: null, featured: false, published: true };
 
 export default function ServicesAdmin() {
   const [items, setItems] = useState(null);

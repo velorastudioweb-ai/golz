@@ -174,6 +174,10 @@ async function main() {
   );
   console.log("icons matched/modified:", icons.matchedCount, icons.modifiedCount);
 
+  /* The emoji field is dead data now that icons are drawn from lucide. */
+  const emoji = await db.collection("services").updateMany({}, { $unset: { emoji: "" } });
+  console.log("emoji fields removed:", emoji.modifiedCount);
+
   const award = await db
     .collection("settings")
     .updateOne(

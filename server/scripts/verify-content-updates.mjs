@@ -18,9 +18,10 @@ console.log("ongoing durations left:", await db.collection("services").countDocu
 const about = await db.collection("settings").findOne({ key: "about" });
 console.log("award:", about.value.recognition[0]);
 console.log("speaking seeded:", !!about.value.speaking, "| affiliations seeded:", !!about.value.professionalAffiliations);
-const services = await db.collection("services").find({}).project({ slug: 1, icon: 1, emoji: 1 }).sort({ order: 1 }).toArray();
+const services = await db.collection("services").find({}).project({ slug: 1, icon: 1 }).sort({ order: 1 }).toArray();
 console.log("icons:", services.map((s) => `${s.slug}=${s.icon || "MISSING"}`).join(" | "));
 console.log("services without a usable icon:", services.filter((s) => !s.icon).length);
+console.log("emoji fields left:", await db.collection("services").countDocuments({ emoji: { $exists: true } }));
 const home = (await db.collection("settings").findOne({ key: "homepage" })).value.stats;
 const aboutStats = (await db.collection("settings").findOne({ key: "about" })).value.stats;
 console.log("home stats:", home.length, JSON.stringify(home));
