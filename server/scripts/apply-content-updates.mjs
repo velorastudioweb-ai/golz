@@ -23,6 +23,7 @@ const HOMEPAGE_STATS = [
   { value: 19, suffix: "+", label: "Years of changing lives with nutrition and wellness programs" },
   { value: 13, suffix: "+", label: "Countries with global clientele" },
   { value: 8000, suffix: "+", label: "Personalized diet plans delivered" },
+  { value: 3000, suffix: "+", label: "Specialized diet plans for children" },
 ];
 
 /* Exactly three metrics on About, same widths as the rest of the site. */

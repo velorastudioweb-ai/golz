@@ -19,6 +19,7 @@ const FALLBACK_STATS = [
   { value: 19, suffix: "+", label: "Years of changing lives with nutrition and wellness programs" },
   { value: 13, suffix: "+", label: "Countries with global clientele" },
   { value: 8000, suffix: "+", label: "Personalized diet plans delivered" },
+  { value: 3000, suffix: "+", label: "Specialized diet plans for children" },
 ];
 
 /* Success Stories returns null on an empty list, so these three published
@@ -312,7 +313,7 @@ export default function Home() {
       {/* ================= STATISTICS ================= */}
       <section className="bg-sageLight section-pad">
         <div className="container-x">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
             {(h.stats?.length ? h.stats : FALLBACK_STATS).map((s, i) => (
               <Reveal key={s.label} delay={i * 0.08}>
                 <div className="group flex min-h-[170px] flex-col items-center justify-center rounded-[24px] border border-ink/5 bg-white p-6 text-center shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lift">

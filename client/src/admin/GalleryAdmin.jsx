@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Upload, Trash2, Star, Eye, EyeOff, Pencil, CheckSquare, Square, Filter,
   LayoutGrid, Plus, ChevronUp, ChevronDown, Save, X, Tag as TagIcon, Image as ImageIcon,
+  Layers, ImagePlus,
 } from "lucide-react";
 import api from "../api/client";
 import SEO from "../components/SEO";
@@ -27,7 +28,12 @@ export default function GalleryAdmin() {
   const [busy, setBusy] = useState(false);
   const [uploadSection, setUploadSection] = useState("General");
   const [uploadTags, setUploadTags] = useState([]);
+  const [uploadMainSection, setUploadMainSection] = useState("");
   const [uploadEventName, setUploadEventName] = useState("");
+  const [uploadTitle, setUploadTitle] = useState("");
+  const [uploadDescription, setUploadDescription] = useState("");
+  const [uploadPreview, setUploadPreview] = useState([]);
+  const [subsectionFilter, setSubsectionFilter] = useState("");
   const [sectionModal, setSectionModal] = useState(null);
   const [deletingSection, setDeletingSection] = useState(null);
   const [newEventTitle, setNewEventTitle] = useState("");
@@ -37,6 +43,8 @@ export default function GalleryAdmin() {
   const [coverUploading, setCoverUploading] = useState(false);
   const fileRef = useRef(null);
   const coverRef = useRef(null);
+  const uploadRef = useRef(null);
+  const gridRef = useRef(null);
 
   const load = () =>
     api.get("/admin/gallery").then(({ data }) => { setItems(data); setSelected([]); }).catch(() => {
@@ -70,15 +78,47 @@ export default function GalleryAdmin() {
 
   const showToast = (message, type = "success") => { setToast({ message, type }); setTimeout(() => setToast(null), 3000); };
 
-  const uploadFiles = async (files) => {
+  const clearPreview = () => {
+    setUploadPreview((cur) => {
+      cur.forEach((p) => p.url && URL.revokeObjectURL(p.url));
+      return [];
+    });
+  };
+
+  const pickFiles = (files) => {
+    const next = files.map((file) => ({
+      file,
+      name: file.name,
+      url: file.type.startsWith("image/") ? URL.createObjectURL(file) : "",
+      video: file.type.startsWith("video/"),
+    }));
+    setUploadPreview((cur) => [...cur, ...next]);
+  };
+
+  const removePreview = (index) =>
+    setUploadPreview((cur) => {
+      const p = cur[index];
+      if (p?.url) URL.revokeObjectURL(p.url);
+      return cur.filter((_, i) => i !== index);
+    });
+
+  const uploadFiles = async () => {
+    if (!uploadSection) return showToast("Please select a year before uploading", "error");
+    if (!uploadEventName.trim()) return showToast("Please select or type a subsection before uploading", "error");
+    if (!uploadPreview.length) return showToast("Choose at least one image first", "error");
+
+    const tagsForBatch = [...new Set([uploadMainSection, ...uploadTags].map((t) => String(t).trim()).filter(Boolean))];
+    const files = uploadPreview.map((p) => p.file);
     setUploading(files.length);
     const failed = [];
     for (const file of files) {
       const form = new FormData();
       form.append("file", file);
       form.append("category", uploadSection);
-      form.append("eventName", uploadEventName);
-      for (const tag of uploadTags) form.append("tags", tag);
+      form.append("eventName", uploadEventName.trim());
+      if (uploadTitle.trim()) form.append("caption", uploadTitle.trim());
+      if (uploadDescription.trim()) form.append("description", uploadDescription.trim());
+      for (const tag of tagsForBatch) form.append("tags", tag);
       try {
         await api.post("/admin/gallery/upload", form);
       } catch (err) {
@@ -86,17 +126,31 @@ export default function GalleryAdmin() {
       }
       setUploading((u) => u - 1);
     }
-    const suffix = uploadTags.length ? ` · tagged ${uploadTags.join(", ")}` : "";
+    const prefix = `${uploadSection} › ${uploadEventName.trim()}`;
+    const suffix = tagsForBatch.length ? ` · tagged ${tagsForBatch.join(", ")}` : "";
     if (failed.length === 0) {
-      showToast(`Uploaded ${files.length} file${files.length > 1 ? "s" : ""} to ${uploadSection}${suffix}`);
+      showToast(`Uploaded ${files.length} file${files.length > 1 ? "s" : ""} to ${prefix}${suffix}`);
     } else if (failed.length === files.length) {
       showToast(`Upload failed: ${failed[0].message}`, "error");
     } else {
       showToast(`${files.length - failed.length} uploaded, ${failed.length} failed (e.g. ${failed[0].name}: ${failed[0].message})`, "error");
     }
+    clearPreview();
     load();
     loadSections();
     loadTags();
+  };
+
+  const addImagesTo = (year, subsection) => {
+    setUploadSection(year);
+    setUploadEventName(subsection === "(no subsection)" ? "" : subsection);
+    uploadRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const manageImages = (year, subsection) => {
+    setFilter(year);
+    setSubsectionFilter(subsection === "(no subsection)" ? "" : subsection);
+    gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const toggleUploadTag = (name) =>
@@ -250,7 +304,44 @@ export default function GalleryAdmin() {
   })();
 
   const chips = sections.length ? sections.map((s) => s.name) : [];
-  const visible = (items || []).filter((g) => filter === "All" || g.category === filter);
+  const visible = (items || []).filter(
+    (g) => (filter === "All" || g.category === filter) &&
+      (!subsectionFilter || String(g.eventName || "").trim() === subsectionFilter)
+  );
+
+  /* Subsection directory: year -> subsection -> image count. Rendered in the
+     same order as the sections list so it mirrors the public gallery. */
+  const sectionRank = new Map(sections.map((s, i) => [s.name, i]));
+  const subsectionsByYear = (() => {
+    const map = new Map();
+    for (const g of items || []) {
+      const year = g.category || "General";
+      if (!map.has(year)) map.set(year, new Map());
+      const subs = map.get(year);
+      const name = String(g.eventName || "").trim() || "(no subsection)";
+      subs.set(name, (subs.get(name) || 0) + 1);
+    }
+    return [...map.entries()]
+      .sort((a, b) => (sectionRank.get(a[0]) ?? 999) - (sectionRank.get(b[0]) ?? 999))
+      .map(([year, subs]) => [year, [...subs.entries()].sort((a, b) => a[0].localeCompare(b[0])),
+        [...subs.values()].reduce((n, c) => n + c, 0)]);
+  })();
+
+  /* Existing subsection names for the year currently selected in the upload
+     form, used to populate the datalist dropdown (admins can still type new). */
+  const subsectionOptions = [...new Set(
+    (items || [])
+      .filter((g) => g.category === uploadSection)
+      .map((g) => String(g.eventName || "").trim())
+      .filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b));
+
+  const subsectionOptionsFor = (year) => [...new Set(
+    (items || [])
+      .filter((g) => g.category === year)
+      .map((g) => String(g.eventName || "").trim())
+      .filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b));
 
   return (
     <>
@@ -259,7 +350,7 @@ export default function GalleryAdmin() {
         <div className="flex flex-wrap items-center gap-2">
           <Filter size={16} className="text-charcoal/40" />
           {["All", ...chips].map((c) => (
-            <button key={c} onClick={() => setFilter(c)} className={`chip ${filter === c ? "chip-active" : ""}`}>{c}</button>
+            <button key={c} onClick={() => { setFilter(c); setSubsectionFilter(""); }} className={`chip ${filter === c ? "chip-active" : ""}`}>{c}</button>
           ))}
         </div>
         <div className="flex items-center gap-3">
@@ -268,77 +359,200 @@ export default function GalleryAdmin() {
               <Trash2 size={15} /> Delete ({selected.length})
             </button>
           )}
-          <select
-            value={uploadSection}
-            onChange={(e) => setUploadSection(e.target.value)}
-            className="input !w-auto !py-2.5 !text-sm"
-            aria-label="Upload to section"
-            title="Section to upload into"
-          >
-            {sections.length ? sections.map((s) => <option key={s._id} value={s.name}>{s.title || s.name}</option>) : <option value="General">General</option>}
-          </select>
-          <button
-            onClick={() => fileRef.current?.click()}
-            disabled={uploading > 0 || busy || sections.length === 0}
-            className="btn-primary !px-5 !py-2.5 !text-sm disabled:opacity-60"
-            title={sections.length === 0 ? "Please select a gallery section first" : `Upload to ${uploadSection}`}
-          >
-            <Upload size={16} /> {uploading > 0 ? `Uploading ${uploading}…` : `Add Images`}
-          </button>
-          <input ref={fileRef} type="file" multiple accept="image/*,video/*" className="hidden"
-            onChange={(e) => { const files = Array.from(e.target.files || []); if (files.length) uploadFiles(files); e.target.value = ""; }} />
         </div>
       </div>
 
       {sections.length === 0 ? (
         <p className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-          Add a section below first, then choose it in the dropdown to upload images into it.
+          Add a section (year) below first, then choose it here to upload images into its subsections.
         </p>
       ) : (
-        <div className="mb-6 rounded-2xl border border-primary/15 bg-primary/5 p-4">
-          <p className="text-sm text-primary">
-            Adding to: <strong>{uploadSection}</strong>
-          </p>
-          <div className="mt-3 grid gap-3 lg:grid-cols-2">
+        <div ref={uploadRef} className="card mb-6 p-5">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h3 className="flex items-center gap-2 font-heading text-base font-bold text-charcoal">
+              <Upload size={17} className="text-primary" /> Add Images to a Subsection
+            </h3>
+            <p className="text-xs text-charcoal/50">Pick a year and a subsection, choose images, then upload.</p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
             <label className="flex flex-col gap-1.5 text-xs font-semibold text-charcoal/60">
-              Event name (optional)
+              Select Year <span className="text-red-500">*</span>
+              <select
+                value={uploadSection}
+                onChange={(e) => { setUploadSection(e.target.value); setUploadEventName(""); }}
+                className="input !py-2 !text-sm"
+                aria-label="Select year"
+              >
+                {sections.map((s) => <option key={s._id} value={s.name}>{s.title || s.name}</option>)}
+              </select>
+            </label>
+
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-charcoal/60">
+              Select Main Section <span className="font-normal text-charcoal/40">(optional)</span>
+              <select
+                value={uploadMainSection}
+                onChange={(e) => setUploadMainSection(e.target.value)}
+                className="input !py-2 !text-sm"
+                aria-label="Select main section"
+              >
+                <option value="">— none —</option>
+                {tags.filter((t) => t.published !== false).map((t) => <option key={t._id} value={t.name}>{t.name}</option>)}
+              </select>
+            </label>
+
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-charcoal/60">
+              Select Subsection <span className="text-red-500">*</span>
               <input
+                list="gallery-subsection-options"
                 className="input !py-2 !text-sm"
                 value={uploadEventName}
                 onChange={(e) => setUploadEventName(e.target.value)}
-                placeholder="e.g. Annual Cultural Fest"
+                placeholder="Pick an existing one or type a new name"
+                aria-label="Select subsection"
               />
+              <datalist id="gallery-subsection-options">
+                {subsectionOptions.map((name) => <option key={name} value={name} />)}
+              </datalist>
             </label>
-            <div className="flex flex-col gap-1.5 text-xs font-semibold text-charcoal/60">
-              Tags (optional, applied to every file in this upload)
-              {tags.length ? (
-                <div className="flex flex-wrap gap-1.5">
-                  {tags.map((t) => {
-                    const active = uploadTags.includes(t.name);
-                    return (
-                      <button
-                        key={t._id}
-                        type="button"
-                        onClick={() => toggleUploadTag(t.name)}
-                        className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
-                          active ? "border-primary bg-primary text-white" : "border-primary/25 bg-white text-primary hover:bg-primary/5"
-                        }`}
-                      >
-                        {t.name}
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : (
-                <span className="font-normal text-charcoal/45">No tags yet — add some in the Tags section below.</span>
-              )}
-            </div>
           </div>
-          <p className="mt-3 text-xs text-charcoal/50">
-            Choose the year/section, add an optional event name and tags, then click Add Images and pick one or many files.
-          </p>
+
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-charcoal/60">
+              Image title <span className="font-normal text-charcoal/40">(optional)</span>
+              <input className="input !py-2 !text-sm" value={uploadTitle} onChange={(e) => setUploadTitle(e.target.value)} placeholder="Shown as the caption" />
+            </label>
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-charcoal/60">
+              Description <span className="font-normal text-charcoal/40">(optional)</span>
+              <input className="input !py-2 !text-sm" value={uploadDescription} onChange={(e) => setUploadDescription(e.target.value)} placeholder="Short description for these images" />
+            </label>
+          </div>
+
+          <div className="mt-4 flex flex-col gap-1.5 text-xs font-semibold text-charcoal/60">
+            Additional tags <span className="font-normal text-charcoal/40">(optional — applied to every image in this upload)</span>
+            {tags.length ? (
+              <div className="flex flex-wrap gap-1.5">
+                {tags.map((t) => {
+                  const active = uploadTags.includes(t.name) || uploadMainSection === t.name;
+                  return (
+                    <button
+                      key={t._id}
+                      type="button"
+                      onClick={() => toggleUploadTag(t.name)}
+                      className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                        active ? "border-primary bg-primary text-white" : "border-primary/25 bg-white text-primary hover:bg-primary/5"
+                      }`}
+                    >
+                      {t.name}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <span className="font-normal text-charcoal/45">No tags yet — add some in the Tags section below.</span>
+            )}
+          </div>
+
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading > 0 || busy}
+              className="btn-outline !px-5 !py-2.5 !text-sm disabled:opacity-60"
+            >
+              <ImagePlus size={16} /> Choose images
+            </button>
+            <input
+              ref={fileRef}
+              type="file"
+              multiple
+              accept="image/*,video/*"
+              className="hidden"
+              onChange={(e) => { const files = Array.from(e.target.files || []); if (files.length) pickFiles(files); e.target.value = ""; }}
+            />
+            {uploadPreview.length > 0 && (
+              <span className="text-sm text-charcoal/60">{uploadPreview.length} file{uploadPreview.length > 1 ? "s" : ""} ready</span>
+            )}
+          </div>
+
+          {uploadPreview.length > 0 && (
+            <div className="mt-4 rounded-2xl border border-primary/15 bg-primary/5 p-3">
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+                {uploadPreview.map((p, i) => (
+                  <div key={`${p.name}-${i}`} className="group relative aspect-square overflow-hidden rounded-xl border border-black/5 bg-white">
+                    {p.video ? (
+                      <span className="flex h-full w-full items-center justify-center bg-charcoal/5 text-xs font-semibold text-charcoal/50">VIDEO</span>
+                    ) : (
+                      <img src={p.url} alt={p.name} className="h-full w-full object-cover" />
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => removePreview(i)}
+                      className="absolute right-1 top-1 rounded-full bg-black/60 p-1 text-white opacity-90 transition hover:bg-red-500"
+                      aria-label={`Remove ${p.name}`}
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-3">
+                <button
+                  onClick={uploadFiles}
+                  disabled={uploading > 0 || busy}
+                  className="btn-primary !px-5 !py-2.5 !text-sm disabled:opacity-60"
+                >
+                  <Upload size={16} /> {uploading > 0 ? `Uploading ${uploading}…` : `Upload ${uploadPreview.length} file${uploadPreview.length > 1 ? "s" : ""}`}
+                </button>
+                <button onClick={clearPreview} disabled={uploading > 0} className="btn-outline !px-4 !py-2.5 !text-sm disabled:opacity-60">
+                  Clear
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
+
+      {/* Subsections manager */}
+      <div className="card mb-6 p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h3 className="flex items-center gap-2 font-heading text-base font-bold text-charcoal">
+            <Layers size={17} className="text-primary" /> Gallery Subsections
+          </h3>
+          <p className="text-xs text-charcoal/50">Each subsection is a heading under its year on the public gallery.</p>
+        </div>
+        {subsectionsByYear.length === 0 ? (
+          <p className="text-sm text-charcoal/50">No images yet — upload some above to create subsections.</p>
+        ) : (
+          <div className="space-y-4">
+            {subsectionsByYear.map(([year, subs, total]) => (
+              <div key={year} className="rounded-2xl border border-gray-100 bg-white p-3">
+                <div className="mb-2 flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-bold text-charcoal">{year}</span>
+                  <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">{total} image{total === 1 ? "" : "s"}</span>
+                </div>
+                <div className="space-y-2">
+                  {subs.map(([name, count]) => (
+                    <div key={name} className="flex flex-wrap items-center gap-3 rounded-xl border border-gray-100 bg-charcoal/[0.02] p-2.5">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-charcoal">{name}</p>
+                        <p className="text-xs text-charcoal/45">{count} image{count === 1 ? "" : "s"}</p>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <button onClick={() => addImagesTo(year, name)} className="flex items-center gap-1 rounded-lg bg-primary/10 px-2.5 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary hover:text-white">
+                          <Plus size={13} /> Add Images
+                        </button>
+                        <button onClick={() => manageImages(year, name)} className="flex items-center gap-1 rounded-lg bg-gray-100 px-2.5 py-1.5 text-xs font-semibold text-charcoal/70 transition hover:bg-primary hover:text-white">
+                          <Eye size={13} /> Manage Images
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Sections manager */}
       <div className="card mb-6 p-5">
@@ -432,11 +646,21 @@ export default function GalleryAdmin() {
 
       {!items ? (
         <PageLoader />
-      ) : visible.length === 0 ? (
-        <EmptyState text="No media in this section. Upload images or videos to get started." />
       ) : (
-        <div className="columns-2 gap-4 sm:columns-3 lg:columns-4 xl:columns-5">
-          {visible.map((g, i) => (
+        <>
+          {subsectionFilter && (
+            <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-primary/15 bg-primary/5 px-4 py-2.5 text-sm">
+              <span className="text-charcoal/70">Showing <strong>{filter}</strong> › <strong>{subsectionFilter}</strong></span>
+              <button onClick={() => setSubsectionFilter("")} className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-primary shadow-sm transition hover:bg-primary hover:text-white">
+                Clear filter
+              </button>
+            </div>
+          )}
+          {visible.length === 0 ? (
+            <EmptyState text={subsectionFilter ? "No media in this subsection." : "No media in this section. Upload images or videos to get started."} />
+          ) : (
+            <div ref={gridRef} className="columns-2 gap-4 sm:columns-3 lg:columns-4 xl:columns-5">
+              {visible.map((g, i) => (
             <div
               key={g._id}
               draggable={!selected.length}
@@ -487,7 +711,9 @@ export default function GalleryAdmin() {
               {!g.published && <span className="absolute inset-0 bg-charcoal/55" />}
             </div>
           ))}
-        </div>
+            </div>
+          )}
+        </>
       )}
 
       {items && items.length > 0 && (
@@ -503,17 +729,26 @@ export default function GalleryAdmin() {
                 ? <video src={editing.url} controls className="h-32 w-48 shrink-0 rounded-xl object-cover" />
                 : <ImgFallback src={editing.url} alt="" className="h-32 w-48 shrink-0 rounded-xl object-cover" fallbackClassName="h-32 w-48 shrink-0 rounded-xl" />}
               <div className="flex-1 space-y-4">
-                <Field label="Section">
+                <Field label="Year / Section">
                   <select className="input" value={editing.category} onChange={(e) => setEditing({ ...editing, category: e.target.value })}>
                     {sections.length ? sections.map((s) => <option key={s._id} value={s.name}>{s.title || s.name}</option>) : <option>{editing.category}</option>}
                   </select>
                 </Field>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Year" hint="Shown as secondary info">
+                  <Field label="Year label" hint="Shown as secondary info">
                     <input className="input" value={editing.year || ""} onChange={(e) => setEditing({ ...editing, year: e.target.value })} placeholder="e.g. 2020" />
                   </Field>
-                  <Field label="Event name" hint="Main heading for this photo">
-                    <input className="input" value={editing.eventName || ""} onChange={(e) => setEditing({ ...editing, eventName: e.target.value })} placeholder="e.g. Annual Cultural Fest" />
+                  <Field label="Subsection" hint="Heading this photo appears under (pick or type new)">
+                    <input
+                      list="gallery-subsection-options-edit"
+                      className="input"
+                      value={editing.eventName || ""}
+                      onChange={(e) => setEditing({ ...editing, eventName: e.target.value })}
+                      placeholder="e.g. Annual Cultural Fest"
+                    />
+                    <datalist id="gallery-subsection-options-edit">
+                      {subsectionOptionsFor(editing.category).map((name) => <option key={name} value={name} />)}
+                    </datalist>
                   </Field>
                 </div>
                 <Field label="Tags" hint="Shown as the “Type” filters on the gallery page.">
