@@ -108,10 +108,12 @@ router.get("/gallery", asyncHandler(async (req, res) => {
     pages: Math.max(1, Math.ceil(total / limit)),
     categories,
     /* Sections with no published photos are omitted: a filter chip that can only
-       ever show an empty result is worse than no chip at all. */
+       ever show an empty result is worse than no chip at all. A section that
+       carries a description is kept even with no photos — it exists only to
+       place that text under an event or year title. */
     sections: sections
       .map((s) => ({ ...s, count: countByCategory[s.name] || 0 }))
-      .filter((s) => s.count > 0),
+      .filter((s) => s.count > 0 || Boolean(s.description)),
   });
 }));
 
@@ -147,7 +149,11 @@ router.get("/gallery/sections", asyncHandler(async (_req, res) => {
     { $group: { _id: "$category", n: { $sum: 1 } } },
   ]);
   const map = Object.fromEntries(counts.map((c) => [c._id, c.n]));
-  res.json(sections.map((s) => ({ ...s, count: map[s.name] || 0 })).filter((s) => s.count > 0));
+  res.json(
+    sections
+      .map((s) => ({ ...s, count: map[s.name] || 0 }))
+      .filter((s) => s.count > 0 || Boolean(s.description))
+  );
 }));
 
 router.get("/blogs", asyncHandler(async (req, res) => {

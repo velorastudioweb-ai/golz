@@ -83,7 +83,7 @@ const FB = {
     heading: "Nutrition for children with special needs",
     text: "Specialised child nutrition is at the heart of Dr. Sushma's work — she's delivered over 3,000 diet plans for children with ASD/Autism, ADHD, and developmental needs, through institutions like AIISH (Mysore) and early-intervention school programs. Certified in Autism & ADHD Nutrition Therapy (Cambridge International Institute, UK), she builds gentle, practical plans that work with a child's sensitivities, not against them.",
     stat: {
-      value: 5000,
+      value: 8000,
       suffix: "+",
       label: "diet plans delivered for children with special needs",
     },
@@ -135,7 +135,7 @@ const FB = {
   stats: [
     { value: 19, suffix: "+", label: "Years Experience" },
     { value: 15000, suffix: "+", label: "Programs Completed" },
-    { value: 5000, suffix: "+", label: "Diet Plans Delivered" },
+    { value: 8000, suffix: "+", label: "Diet Plans Delivered" },
     { value: 3000, suffix: "+", label: "Plans for Special Kids" },
   ],
 };
@@ -174,8 +174,8 @@ export default function About() {
     credibility: str(s.credibility, FB.specialNeeds.credibility),
     ctaLabel: str(s.ctaLabel, FB.specialNeeds.ctaLabel),
     stat: {
-      // Approved figure is 5,000+ even though the CMS record still says 3,000.
-      value: 5000,
+      /* 8,000+ is the approved figure everywhere diet plans are counted. */
+      value: Number(s.stat?.value) > 0 ? Number(s.stat.value) : FB.specialNeeds.stat.value,
       suffix: str(s.stat?.suffix, FB.specialNeeds.stat.suffix),
       label: str(s.stat?.label, FB.specialNeeds.stat.label),
     },

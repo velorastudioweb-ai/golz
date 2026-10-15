@@ -355,7 +355,7 @@ export default function GalleryAdmin() {
             <Field label="Title shown on gallery page" hint="Leave empty to use the name">
               <input className="input" value={sectionModal.title} onChange={(e) => setSectionModal({ ...sectionModal, title: e.target.value })} placeholder={sectionModal.name || "e.g. Cooking Workshops"} />
             </Field>
-            <Field label="Description" hint="Shown under the section title on the gallery page">
+            <Field label="Description" hint="Shown under the title on the gallery page; leave blank to show nothing. To place text under an event, save this section with that exact event title as the name (e.g. 30 Mar 2024 Cancer Infertility, Roopanagar).">
               <textarea className="input resize-none" rows={3} value={sectionModal.description} onChange={(e) => setSectionModal({ ...sectionModal, description: e.target.value })} placeholder="Short intro for this section…" />
             </Field>
             <label className="flex items-center gap-2.5 text-sm font-medium text-charcoal/75">

@@ -18,7 +18,7 @@ import TestimonialsSection from "../components/TestimonialsSection";
 const FALLBACK_STATS = [
   { value: 19, suffix: "+", label: "Years of changing lives with nutrition and wellness programs" },
   { value: 13, suffix: "+", label: "Countries with global clientele" },
-  { value: 5000, suffix: "+", label: "Personalized diet plans delivered" },
+  { value: 8000, suffix: "+", label: "Personalized diet plans delivered" },
   { value: 3000, suffix: "+", label: "Specialized diet plans for children" },
 ];
 
@@ -148,6 +148,9 @@ const HOME_GALLERY_CAPTIONS = {
   12: "IKMC 2018, Hyderabad",
 };
 
+/* Photos of awards, honours and press recognition — the default tab. */
+const AWARD_PHOTOS = new Set([2, 7, 11]);
+
 const LOCAL_HOME_GALLERY = Array.from({ length: 12 }, (_, i) => {
   const n = i + 1;
   const padded = String(n).padStart(2, "0");
@@ -167,8 +170,15 @@ const LOCAL_HOME_GALLERY = Array.from({ length: 12 }, (_, i) => {
     alt: caption || "GOLZ nutrition — precious moment",
     order: i,
     origin: "home",
+    /* Photos that show an award, honour or newspaper recognition. */
+    award: AWARD_PHOTOS.has(n),
   };
 });
+
+const GALLERY_TABS = [
+  { id: "awards", label: "Awards / Recognitions" },
+  { id: "all", label: "All Photos" },
+];
 
 export default function Home() {
   const { site } = useSite();
@@ -200,7 +210,10 @@ export default function Home() {
 
   /* The home preview shows only the client's own home-gallery photos; the full
      archive lives behind "View Gallery". */
-  const homeGallery = LOCAL_HOME_GALLERY;
+  const [galleryTab, setGalleryTab] = useState(GALLERY_TABS[0].id);
+  const homeGallery =
+    galleryTab === "all" ? LOCAL_HOME_GALLERY : LOCAL_HOME_GALLERY.filter((g) => g.award);
+  /* The lightbox walks whichever tab is on screen, so next/previous follow the grid. */
   const lightboxItems = homeGallery;
 
   return (
@@ -433,7 +446,8 @@ export default function Home() {
                     <h3 className="text-xl font-bold leading-snug text-ink transition-colors group-hover:text-primary sm:text-2xl">
                       {s.title}
                     </h3>
-                    <p className="mt-3 text-[15px] leading-[1.8] text-muted">{s.shortDesc}</p>                  </Link>
+                    <p className="mt-3 text-[15px] leading-[1.8] text-muted">{s.shortDesc}</p>
+                  </Link>
                 </Reveal>
               );
             })}
@@ -466,7 +480,7 @@ export default function Home() {
               {
                 no: "02",
                 title: "Understand your nutritional profile",
-                text: "We map your health, habits and goals with a scientific BCA (Body Composition Analysis), and medical checkups where needed, for a precise picture of your body.",
+                text: "We map your health, habits and goals with a scientific BCA (Body Composition Analysis), and medical checkups where needed, for a precise profile of your body.",
               },
               {
                 no: "03",
@@ -486,7 +500,7 @@ export default function Home() {
                   </p>
                   <span className="mt-5 block h-px w-12 bg-lime" />
                   <h3 className="mt-4 text-xl font-bold leading-snug text-ink">{step.title}</h3>
-                  <p className="mt-3 text-[15px] leading-[1.8] text-muted">{step.text}</p>
+                  <p className="mt-3 text-[18px] leading-[1.75] text-muted">{step.text}</p>
                 </div>
               </Reveal>
             ))}
@@ -500,9 +514,29 @@ export default function Home() {
           <SectionHeading
             eyebrow="Gallery"
             title="Our journey - Precious moments"
-            subtitle="Recipes, workshops, events and real client transformations."
           />
-          <div className="grid grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
+          <div className="mb-8 flex flex-wrap justify-center gap-2.5">
+            {GALLERY_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setGalleryTab(tab.id)}
+                aria-pressed={galleryTab === tab.id}
+                className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-300 ${
+                  galleryTab === tab.id
+                    ? "bg-primary text-white shadow-soft"
+                    : "border border-primary/30 bg-white/80 text-primary hover:bg-white hover:shadow-soft"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          <div
+            className={`grid gap-2 sm:gap-3 lg:gap-4 ${
+              homeGallery.length <= 3 ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-4"
+            }`}
+          >
             {homeGallery.map((g, i) => (
               <Reveal key={g.id} delay={(i % 4) * 0.06} className="h-full">
                 <button

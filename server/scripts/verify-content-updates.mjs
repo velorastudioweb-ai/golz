@@ -20,4 +20,4 @@ console.log("award:", about.value.recognition[0]);
 console.log("speaking seeded:", !!about.value.speaking, "| affiliations seeded:", !!about.value.professionalAffiliations);
 const services = await db.collection("services").find({}).project({ slug: 1, emoji: 1 }).sort({ order: 1 }).toArray();
 console.log("emoji:", services.map((s) => `${s.slug}=${s.emoji || "-"}`).join(" | "));
-await client.close();
+console.log('home stats:', JSON.stringify((await db.collection('settings').findOne({key:'homepage'})).value.stats));console.log('about stats:', JSON.stringify((await db.collection('settings').findOne({key:'about'})).value.stats));console.log('child stat:', JSON.stringify((await db.collection('settings').findOne({key:'about'})).value.specialNeeds.stat));await client.close();

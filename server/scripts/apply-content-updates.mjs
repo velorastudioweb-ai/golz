@@ -189,6 +189,33 @@ async function main() {
   );
   console.log("about sections matched/modified:", aboutCols.matchedCount, aboutCols.modifiedCount);
 
+  /* Diet plans are quoted as 8,000+ everywhere they are counted. */
+  const EIGHT_K_LABELS = ["Personalized diet plans delivered", "Diet Plans Delivered"];
+  const statStages = [
+    {
+      $set: {
+        "value.stats": {
+          $map: {
+            input: { $ifNull: ["$value.stats", []] },
+            as: "s",
+            in: {
+              $cond: [{ $in: ["$$s.label", EIGHT_K_LABELS] }, { $mergeObjects: ["$$s", { value: 8000 }] }, "$$s"],
+            },
+          },
+        },
+      },
+    },
+  ];
+  const homeStats = await db.collection("settings").updateOne({ key: "homepage" }, statStages);
+  const aboutStats = await db
+    .collection("settings")
+    .updateOne({ key: "about" }, [...statStages, { $set: { "value.specialNeeds.stat.value": 8000 } }]);
+  console.log(
+    "diet-plan stats matched/modified:",
+    homeStats.matchedCount, homeStats.modifiedCount,
+    "/", aboutStats.matchedCount, aboutStats.modifiedCount
+  );
+
   await mongoose.disconnect();
 }
 

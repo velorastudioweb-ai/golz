@@ -199,17 +199,32 @@ export { compareFolders, folderRank };
  */
 export function deriveSections(items = [], apiSections = []) {
   const labels = new Map(
-    apiSections.filter((s) => s?.name).map((s) => [s.name, { title: s.title || s.name, published: s.published !== false }])
+    apiSections
+      .filter((s) => s?.name)
+      .map((s) => ({
+        name: s.name,
+        title: s.title || s.name,
+        description: s.description || "",
+        published: s.published !== false,
+      }))
+      .map((s) => [s.name, s])
   );
 
   const counts = new Map();
   for (const item of items) counts.set(item.section, (counts.get(item.section) || 0) + 1);
 
-  return [...counts.keys()].sort(compareFolders).map((name) => ({
+  /* Sections that carry a description but hold no photos are kept in the list
+     (count 0) so an event blurb written in the CMS can still be found; the
+     page hides anything with a zero count from the filter bar. */
+  const describedOnly = apiSections.filter((s) => s?.name && !counts.has(s.name) && s.description).map((s) => s.name);
+
+  return [...counts.keys()].sort(compareFolders).concat(describedOnly).map((name) => ({
     name,
     title: labels.get(name)?.title || name,
+    /* Optional blurb written in the CMS; empty means "show nothing". */
+    description: labels.get(name)?.description || "",
     published: labels.has(name) ? labels.get(name).published : true,
-    count: counts.get(name),
+    count: counts.get(name) || 0,
   }));
 }
 

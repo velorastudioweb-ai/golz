@@ -49,7 +49,12 @@ export default function Gallery() {
     };
   }, []);
 
-  const visibleSections = useMemo(() => sections.filter((s) => s.published !== false), [sections]);
+  /* Description-only sections stay in `sections` for blurbs but never become a
+     filter chip, and only published groups with photos are offered as filters. */
+  const visibleSections = useMemo(
+    () => sections.filter((s) => s.published !== false && s.count > 0),
+    [sections]
+  );
 
   const types = useMemo(() => (items?.length ? eventTypesIn(items) : []), [items]);
 
@@ -104,12 +109,20 @@ export default function Gallery() {
       { value: items.length, label: "Photographs" },
       { value: events.size, label: "Events documented" },
       { value: years.size, label: "Years archived" },
-      { value: sections.length, label: "Collections" },
+      { value: visibleSections.length, label: "Collections" },
     ];
-  }, [items, sections.length]);
+  }, [items, visibleSections.length]);
 
   const openViewer = useCallback((index) => setViewer({ items: filtered, index }), [filtered]);
   const navigate = useCallback((index) => setViewer((v) => (v ? { ...v, index } : v)), []);
+
+  /* Optional CMS blurbs: one stored per section (a year) and one per event
+     title. An empty description renders nothing, so no stray gap is left. */
+  const descriptionFor = useCallback(
+    (name) =>
+      sections.find((s) => String(s.name || "").toLowerCase() === String(name || "").toLowerCase())?.description || "",
+    [sections]
+  );
 
   /* A real photo from the archive, so the social card shows the actual gallery
      instead of an empty tag. The index stores site-relative paths, and social
@@ -182,35 +195,53 @@ export default function Gallery() {
               </div>
 
               <div className="mt-10">
-                {groups.map((group) => (
-                  <section
-                    key={group.section}
-                    id={`gallery-${group.section.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-                    aria-labelledby={`gallery-${group.section.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-heading`}
-                    className="mb-14 last:mb-0"
-                  >
-                    <div className="mb-6 flex items-baseline gap-3 border-b border-line pb-3">
-                      <h3
-                        id={`gallery-${group.section.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-heading`}
-                        className="font-heading text-2xl font-semibold tracking-tight text-ink sm:text-3xl"
-                      >
-                        {group.section}
-                      </h3>
-                      <span className="text-sm font-semibold text-muted">
-                        {group.count} {group.count === 1 ? "photo" : "photos"}
-                      </span>
-                    </div>
-
-                    {group.events.map((event) => (
-                      <div key={event.event} className="mb-9 last:mb-0">
-                        {group.events.length > 1 ? (
-                          <h4 className="mb-4 font-heading text-base font-semibold text-primary">{event.event}</h4>
-                        ) : null}
-                        <GalleryGrid items={event.items} onOpen={openViewer} />
+                {groups.map((group) => {
+                  const sectionDescription = descriptionFor(group.section);
+                  return (
+                    <section
+                      key={group.section}
+                      id={`gallery-${group.section.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                      aria-labelledby={`gallery-${group.section.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-heading`}
+                      className="mb-14 last:mb-0"
+                    >
+                      <div className="mb-6 flex items-baseline gap-3 border-b border-line pb-3">
+                        <h3
+                          id={`gallery-${group.section.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-heading`}
+                          className="font-heading text-2xl font-semibold tracking-tight text-ink sm:text-3xl"
+                        >
+                          {group.section}
+                        </h3>
+                        <span className="text-sm font-semibold text-muted">
+                          {group.count} {group.count === 1 ? "photo" : "photos"}
+                        </span>
                       </div>
-                    ))}
-                  </section>
-                ))}
+
+                      {sectionDescription ? (
+                        <p className="-mt-3 mb-7 max-w-3xl text-[15px] leading-[1.8] text-muted">
+                          {sectionDescription}
+                        </p>
+                      ) : null}
+
+                      {group.events.map((event) => {
+                        const eventDescription = descriptionFor(event.event);
+                        const showEventTitle = group.events.length > 1 || Boolean(eventDescription);
+                        return (
+                          <div key={event.event} className="mb-9 last:mb-0">
+                            {showEventTitle ? (
+                              <h4 className="mb-4 font-heading text-base font-semibold text-primary">{event.event}</h4>
+                            ) : null}
+                            {eventDescription ? (
+                              <p className="-mt-2 mb-5 max-w-3xl text-sm leading-relaxed text-muted">
+                                {eventDescription}
+                              </p>
+                            ) : null}
+                            <GalleryGrid items={event.items} onOpen={openViewer} />
+                          </div>
+                        );
+                      })}
+                    </section>
+                  );
+                })}
 
                 {filtered.length === 0 ? (
                   <div className="mt-10 rounded-[22px] border border-line bg-white px-6 py-14 text-center">
