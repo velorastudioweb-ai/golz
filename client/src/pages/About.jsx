@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import {
   GraduationCap, Award, Target, Eye, ArrowRight, CheckCircle2, BadgeCheck,
-  Sparkles, HeartPulse, Quote, Baby,
+  Sparkles, HeartPulse, Quote, Baby, Mic, Medal,
 } from "lucide-react";
 import { useSite } from "../context/SiteContext";
 import SEO from "../components/SEO";
@@ -76,12 +76,12 @@ const FB = {
     },
     {
       title: "Life-stage & Family",
-      items: ["Pregnancy, GDM & lactation", "Autism & ADHD child nutrition", "Nutrigenomics"],
+      items: ["Pregnancy, GDM & lactation", "ASD/Autism & ADHD child nutrition", "Nutrigenomics, Gutbiomics"],
     },
   ],
   specialNeeds: {
     heading: "Nutrition for children with special needs",
-    text: "Specialised child nutrition is at the heart of Dr. Sushma's work — she's delivered over 3,000 diet plans for children with autism, ADHD, and developmental needs, through institutions like AIISH (Mysore) and early-intervention school programs. Certified in Autism & ADHD Nutrition Therapy (Cambridge International Institute, UK), she builds gentle, practical plans that work with a child's sensitivities, not against them.",
+    text: "Specialised child nutrition is at the heart of Dr. Sushma's work — she's delivered over 3,000 diet plans for children with ASD/Autism, ADHD, and developmental needs, through institutions like AIISH (Mysore) and early-intervention school programs. Certified in Autism & ADHD Nutrition Therapy (Cambridge International Institute, UK), she builds gentle, practical plans that work with a child's sensitivities, not against them.",
     stat: {
       value: 5000,
       suffix: "+",
@@ -98,7 +98,7 @@ const FB = {
     "19 years in personalised nutrition counselling",
   ],
   recognition: [
-    "Karnataka Pride Award for remarkable achievements & transformative contributions",
+    "Karnataka Pride Award for remarkable achievements & transformative contributions in nutrition and wellness",
     "Women Achiever entrepreneur from Academia",
     "Changemaker Award Feb/2022 by Aryan Institute",
     "Awarded women achiever entrepreneur impacting Global health",
@@ -108,6 +108,24 @@ const FB = {
     "Won awards for best research presentations",
   ],
   recognitionFootnote: "…among 10+ national and international honours.",
+  speaking: {
+    eyebrow: "Speaking",
+    title: "Speaking Engagements & Expertise",
+    since: "Since 2015 onwards",
+    items: [
+      "Invited speaker for more than 40–45 national and international conferences.",
+      "Delivered more than 250 invited talks on prevention and management of disease as nutrition counsellor/invited speaker at academic and public forums, Pan India.",
+    ],
+  },
+  professionalAffiliations: {
+    eyebrow: "Memberships",
+    title: "Professional Affiliations",
+    items: [
+      "Life member — Association of Food Scientists and Technologists, India (AFSTI)",
+      "Life member — Indian Dietetics Association (IDA)",
+      "Life member — Indian Nutritional Medical Association (INMA)",
+    ],
+  },
   beyondClinic:
     "Beyond her practice, Dr. Sushma shapes how nutrition is taught in India. She's developed UGC-approved nutrition programs, convenes the Indian Dietetics Association's Mysore chapter, has delivered 250+ invited talks, published 15+ peer-reviewed papers, and — during the pandemic — coordinated nutrition training for 20,000+ Anganwadi and ASHA workers across the country.",
   affiliations: "AFSTI · Indian Dietetics Association (IDA) · Indian Nutritional Medical Association (INMA)",
@@ -141,6 +159,8 @@ export default function About() {
   const credentials = arr(a.credentials, FB.credentials);
   const recognition = arr(a.recognition, FB.recognition);
   const recognitionFootnote = str(a.recognitionFootnote, FB.recognitionFootnote);
+  const speaking = a.speaking?.items?.length ? a.speaking : FB.speaking;
+  const professionalAffiliations = a.professionalAffiliations?.items?.length ? a.professionalAffiliations : FB.professionalAffiliations;
   const beyondClinic = str(a.beyondClinic, FB.beyondClinic);
   const affiliations = str(a.affiliations, FB.affiliations);
   const mission = str(a.mission, FB.mission);
@@ -294,6 +314,48 @@ export default function About() {
                     <GraduationCap size={22} />
                   </span>
                   <p className="pt-1.5 text-sm font-medium leading-relaxed text-ink/80">{c}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ================= SPEAKING ENGAGEMENTS & EXPERTISE ================= */}
+      <section className="bg-section-sage section-pad">
+        <div className="container-x">
+          <SectionHeading
+            eyebrow={speaking.eyebrow}
+            title={speaking.title}
+            subtitle={speaking.since}
+          />
+          <div className="grid gap-5 sm:grid-cols-2">
+            {speaking.items.map((item, i) => (
+              <Reveal key={item} delay={(i % 2) * 0.08}>
+                <div className="card flex h-full items-start gap-4 p-6">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-lime/15 text-limeDark">
+                    <Mic size={22} />
+                  </span>
+                  <p className="pt-1.5 text-sm font-medium leading-relaxed text-ink/80">{item}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ================= PROFESSIONAL AFFILIATIONS ================= */}
+      <section className="section-pad">
+        <div className="container-x">
+          <SectionHeading eyebrow={professionalAffiliations.eyebrow} title={professionalAffiliations.title} />
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {professionalAffiliations.items.map((item, i) => (
+              <Reveal key={item} delay={(i % 3) * 0.08}>
+                <div className="card flex h-full items-start gap-4 p-6">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <Medal size={22} />
+                  </span>
+                  <p className="pt-1.5 text-sm font-medium leading-relaxed text-ink/80">{item}</p>
                 </div>
               </Reveal>
             ))}

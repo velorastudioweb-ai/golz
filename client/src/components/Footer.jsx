@@ -7,6 +7,14 @@ import { useSite } from "../context/SiteContext";
 
 const SOCIAL_ICONS = { facebook: Facebook, instagram: Instagram, youtube: Youtube, twitter: Twitter, linkedin: Linkedin };
 
+/* Published clinic profiles, so the footer never ships without social links
+   even when the settings payload is missing or the fields are still empty. */
+const FALLBACK_SOCIALS = {
+  facebook: "https://www.facebook.com/company/golzmysuru",
+  instagram: "https://www.instagram.com/golzmysuru/",
+  twitter: "https://x.com/GolzMysuru",
+};
+
 export default function Footer() {
   const { site } = useSite();
   const g = site.general || {};
@@ -18,8 +26,10 @@ export default function Footer() {
   const email = g.email || "nutrigolz@gmail.com";
   const whatsapp = g.whatsapp || "919342674406";
 
-  const socials = Object.entries(g.socials || {})
-    .filter(([, url]) => url)
+  const providedSocials = Object.fromEntries(
+    Object.entries(g.socials || {}).filter(([, url]) => typeof url === "string" && url.trim())
+  );
+  const socials = Object.entries({ ...FALLBACK_SOCIALS, ...providedSocials })
     .map(([key, url]) => ({ key, url, Icon: SOCIAL_ICONS[key] }))
     .filter((s) => s.Icon);
 

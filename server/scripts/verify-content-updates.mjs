@@ -1,0 +1,21 @@
+import { MongoClient } from "mongodb";
+import fs from "node:fs";
+
+const uri = fs.readFileSync(new URL("../.env", import.meta.url), "utf8").match(/MONGO_URI=(.*)/)[1].trim();
+const client = new MongoClient(uri);
+await client.connect();
+const db = client.db();
+
+console.log(
+  "images:",
+  JSON.stringify(
+    await db.collection("services").find({ slug: { $in: ["sports-nutrition", "nutrigenomics-gut-health"] } }).project({ slug: 1, image: 1, duration: 1 }).toArray(),
+    null,
+    1
+  )
+);
+console.log("ongoing durations left:", await db.collection("services").countDocuments({ duration: "Ongoing" }));
+const about = await db.collection("settings").findOne({ key: "about" });
+console.log("award:", about.value.recognition[0]);
+console.log("speaking seeded:", !!about.value.speaking, "| affiliations seeded:", !!about.value.professionalAffiliations);
+await client.close();

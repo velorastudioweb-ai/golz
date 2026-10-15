@@ -72,6 +72,14 @@ export default function Services() {
       <Reveal key={s._id} delay={(i % 2) * 0.08}>
         <article className="card grid gap-8 p-8 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:p-10">
           <div>
+            {s.image ? (
+              <img
+                src={s.image}
+                alt={s.title}
+                loading="lazy"
+                className="mb-6 aspect-[16/9] w-full rounded-[18px] object-cover"
+              />
+            ) : null}
             <div className="mb-4 flex items-center gap-4">
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-primary/10 text-primary">
                 {Icon && <Icon size={24} />}

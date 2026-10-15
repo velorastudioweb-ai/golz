@@ -16,8 +16,8 @@ import { ICON_MAP } from "../utils/helpers";
 import TestimonialsSection from "../components/TestimonialsSection";
 
 const FALLBACK_STATS = [
-  { value: 20, suffix: "+", label: "Years of science-backed nutrition care" },
-  { value: 15000, suffix: "+", label: "Nutrition & wellness programs completed" },
+  { value: 19, suffix: "+", label: "Years of changing lives with nutrition and wellness programs" },
+  { value: 13, suffix: "+", label: "Countries with global clientele" },
   { value: 5000, suffix: "+", label: "Personalized diet plans delivered" },
   { value: 3000, suffix: "+", label: "Specialized diet plans for children" },
 ];
@@ -96,29 +96,75 @@ function CountUp({ value, suffix = "" }) {
 
 const FOUNDER_BIO = [
   "Dr. Sushma Appaiah is the Founder of GOLZ (Giggles of Livez) and a distinguished nutrition scientist with 19 years of experience in clinical nutrition, corporate wellness, and health counselling.",
+  "Karnataka Pride Award for remarkable achievements & transformative contributions in the field of nutrition and wellness.",
   "She holds a Ph.D. in Food Science & Technology from CSIR-CFTRI, Mysore, and an M.Sc. in Food & Nutrition (2nd Rank) from the University of Mysore.",
   "Over the years, she has helped clients across 13 countries achieve sustainable health through evidence-based nutrition and personalized care.",
   "A recipient of the DST Women Scientist Award and recognized as the Most Innovative Nutrition Counsellor of the Year, Dr. Sushma is known for developing innovative food formulations for special children and translating scientific research into practical nutrition solutions.",
-  "Her areas of expertise include reversing diabetes, PCOD (recently termed as PMOS), thyroid disorders, pregnancy nutrition, sports nutrition, autism and special child nutrition, and nutrigenomics, empowering individuals and families to build healthier lives through personalized nutrition.",
+  "HER AREAS OF EXPERTISE INCLUDE REVERSING DIABETES, PCOD (RECENTLY TERMED AS PMOS), THYROID DISORDERS, PREGNANCY NUTRITION, SPORTS NUTRITION, ASD/ AUTISM AND SPECIAL CHILDREN NUTRITION, NUTRIGENOMICS, GUTBIOMICS, EMPOWERING INDIVIDUALS AND FAMILIES TO BUILD HEALTHIER LIVES THROUGH PERSONALIZED NUTRITION.",
 ].join("\n\n");
+
+/* Client photos from the home gallery stand in for the hero social-proof
+   stack, so the row shows real people instead of placeholder glyphs. */
+const PATIENT_PHOTOS = [1, 2, 3, 4, 5].map((n) => ({
+  src: `/home-gallery/home-${String(n).padStart(2, "0")}.jpg`,
+  alt: `GOLZ client ${n}`,
+}));
+
+function PatientAvatar({ photo, color }) {
+  const [broken, setBroken] = useState(false);
+  return (
+    <span
+      className={`relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border-2 border-cream ${color} text-white shadow-card`}
+      aria-hidden="true"
+    >
+      {broken ? (
+        <Leaf size={16} />
+      ) : (
+        <img
+          src={photo.src}
+          alt=""
+          loading="lazy"
+          onError={() => setBroken(true)}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      )}
+    </span>
+  );
+}
 
 /* The client's own photo drop in client/public/home-gallery ships with the
    bundle and always leads the home grid; the pinned events and the rest of the
    archive fill the remaining slots behind it. */
+const HOME_GALLERY_CAPTIONS = {
+  2: "RECOGNITION BY IISF 2020 — NEWSPAPER",
+  3: "MOU with St Philomean's College — June 2015",
+  4: "Awareness on food safety — April 2016",
+  5: "Nov 2020 — SIG-PHN Pan India (IDA)",
+  6: "April 2016 — Food Safety & Food Law for post graduate Nutrition & dietetics students",
+  7: "The Changemaker Award — Aryan Shiksha — 2022",
+  8: "Lucknow — March 6, 7, 8, 2024",
+  9: "AVP — program VO2 Max",
+  11: "Award Function — Feb 2020",
+  12: "IKMC 2018, Hyderabad",
+};
+
 const LOCAL_HOME_GALLERY = Array.from({ length: 12 }, (_, i) => {
-  const n = String(i + 1).padStart(2, "0");
+  const n = i + 1;
+  const padded = String(n).padStart(2, "0");
+  const caption = HOME_GALLERY_CAPTIONS[n] || "";
   return {
-    id: `home-gallery-${n}`,
-    image: `/home-gallery/home-${n}.jpg`,
-    thumb: `/home-gallery/home-${n}.jpg`,
+    id: `home-gallery-${padded}`,
+    image: `/home-gallery/home-${padded}.jpg`,
+    thumb: `/home-gallery/home-${padded}.jpg`,
     type: "image",
     section: "Home Gallery",
     sectionId: "",
     year: "",
-    eventName: "Our journey - Precious moments",
-    caption: "",
+    eventName: caption || "Our journey - Precious moments",
+    caption,
+    /* The label doubles as the event name, so the lightbox shows it once. */
     hasOwnCaption: false,
-    alt: "GOLZ nutrition — precious moment",
+    alt: caption || "GOLZ nutrition — precious moment",
     order: i,
     origin: "home",
   };
@@ -197,7 +243,7 @@ export default function Home() {
                 {h.heroTitle || "Real food. Real plans. Real results—built around you."}
               </h1>
               <p className="mx-auto mt-5 max-w-[600px] text-base leading-relaxed text-muted sm:text-lg lg:mx-0 lg:text-xl">
-                {h.heroSubtitle || "Science-backed, personalized nutrition plans designed to improve your health without giving up the foods you love. Online and in-clinic consultations available."}
+                {h.heroSubtitle || "GOLZ is a science-backed platform offering personalized nutrition plans designed to improve your health without giving up the foods you love, serving a global clientele with clinical nutrition."}
               </p>
               <div className="mt-8 flex justify-center lg:justify-start">
                 <Link to={h.ctaPrimary?.link || "/contact"} className="btn-terracotta min-w-[200px] lg:min-w-[220px]">
@@ -207,21 +253,15 @@ export default function Home() {
 
               <div className="mt-9 flex flex-wrap items-center justify-center gap-5 lg:justify-start">
                 <div className="flex -space-x-3">
-                  {["bg-primary", "bg-olive", "bg-honey", "bg-sage", "bg-terracotta"].map((c) => (
-                    <span
-                      key={c}
-                      className={`flex h-11 w-11 items-center justify-center rounded-full border-2 border-cream ${c} text-white shadow-card`}
-                      aria-hidden="true"
-                    >
-                      <Leaf size={16} />
-                    </span>
+                  {PATIENT_PHOTOS.map((photo, i) => (
+                    <PatientAvatar key={photo.src} photo={photo} color={["bg-primary", "bg-olive", "bg-honey", "bg-sage", "bg-terracotta"][i]} />
                   ))}
                 </div>
                 <div className="text-center lg:text-left">
                   <p className="flex items-center justify-center gap-1.5 text-sm font-semibold text-ink lg:justify-start">
                     <Star size={16} className="fill-honey text-honey" /> 4.8 Google Rating
                   </p>
-                  <p className="mt-0.5 text-sm text-muted">500+ Happy Clients</p>
+                  <p className="mt-0.5 text-sm text-muted">8k+ Happy Clients</p>
                 </div>
               </div>
             </motion.div>
@@ -295,11 +335,10 @@ export default function Home() {
               ))}
             </div>
 
-            <div className="mx-auto mt-9 grid max-w-[620px] grid-cols-3 divide-x divide-white/10 rounded-[18px] border border-white/15 bg-white/5 py-6 lg:mx-0">
+            <div className="mx-auto mt-9 grid max-w-[620px] grid-cols-2 divide-x divide-white/10 rounded-[18px] border border-white/15 bg-white/5 py-6 lg:mx-0">
               {[
                 { value: site.about?.experienceYears || 19, suffix: "+", label: "Years of Experience" },
-                { value: site.about?.specialNeeds?.stat?.value || 5000, suffix: "+", label: "Diet Plans" },
-                { value: 500, suffix: "+", label: "Happy Clients" },
+                { value: 8000, suffix: "+", label: "Diet Plans" },
               ].map((s) => (
                 <div key={s.label} className="px-2 text-center sm:px-4">
                   <p className="font-heading text-2xl font-semibold text-lime sm:text-4xl">
@@ -365,7 +404,7 @@ export default function Home() {
               Services
             </span>
             <h2 className="text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl lg:text-[46px]">
-              Nutrition &amp; Care for Every Stage to Meet Your Goals &amp; Health Needs
+              NUTRITION &amp; CARE FOR EVERY LIFE STAGE TO MEET YOUR GOALS &amp; HEALTH NEEDS
             </h2>
             <p className="mx-auto mt-5 max-w-[600px] text-base leading-[1.8] text-muted sm:text-lg">
               From weight management and diabetes care to pregnancy, children's nutrition, sports nutrition, oncology, and healthy aging, every nutrition plan is personalized to your body, goals, medical history, and food preferences.
@@ -381,14 +420,21 @@ export default function Home() {
                     to={`/services/${s.slug}`}
                     className="group flex h-full min-h-[240px] flex-col rounded-[24px] border border-[#ECECEC] bg-white p-7 transition-all duration-300 ease-out hover:-translate-y-2 hover:border-transparent hover:shadow-lift sm:p-8"
                   >
+                    {s.image ? (
+                      <img
+                        src={s.image}
+                        alt={s.title}
+                        loading="lazy"
+                        className="mb-6 aspect-[16/9] w-full rounded-[18px] object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                      />
+                    ) : null}
                     <span className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/5 text-primary transition-transform duration-300 ease-out group-hover:scale-110">
                       {Icon && <Icon size={26} />}
                     </span>
                     <h3 className="text-xl font-bold leading-snug text-ink transition-colors group-hover:text-primary sm:text-2xl">
                       {s.title}
                     </h3>
-                    <p className="mt-3 text-[15px] leading-[1.8] text-muted">{s.shortDesc}</p>
-                  </Link>
+                    <p className="mt-3 text-[15px] leading-[1.8] text-muted">{s.shortDesc}</p>                  </Link>
                 </Reveal>
               );
             })}
@@ -480,9 +526,9 @@ export default function Home() {
                       className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   )}
-                  <span className="absolute inset-0 bg-gradient-to-t from-charcoal/70 to-transparent opacity-0 transition group-hover:opacity-100" />
+                  <span className="absolute inset-0 bg-gradient-to-t from-charcoal/70 to-transparent opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100" />
                   {g.caption && (
-                    <span className="absolute bottom-3 left-3 right-3 translate-y-2 truncate text-xs font-medium text-white opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100">
+                    <span className="absolute bottom-2.5 left-3 right-3 line-clamp-2 text-[11px] font-medium leading-snug text-white opacity-100 transition sm:bottom-3 sm:text-xs sm:opacity-0 sm:translate-y-2 sm:group-hover:translate-y-0 sm:group-hover:opacity-100">
                       {g.caption}
                     </span>
                   )}

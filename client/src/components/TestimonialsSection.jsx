@@ -9,8 +9,8 @@ const GAP = 32;
 const AUTOPLAY_MS = 6000;
 
 const TRUST_STATS = [
-  { value: 500, suffix: "+", label: "Happy Clients", decimals: 0 },
-  { value: 4.9, suffix: "/5", label: "Average Rating", decimals: 1 },
+  { value: 8, suffix: "k+", label: "Happy Clients", decimals: 0 },
+  { value: 4.8, suffix: "/5", label: "Average Rating", decimals: 1 },
   { value: 95, suffix: "%", label: "Goal Achievement", decimals: 0 },
 ];
 

@@ -70,6 +70,9 @@ export default function ServiceDetail() {
   const Icon = ICON_MAP.get(service.icon) || ICON_MAP.get("Sparkles");
   const planCovers = Array.isArray(service.planCovers) ? service.planCovers : [];
   const suitableFor = Array.isArray(service.suitableFor) ? service.suitableFor : [];
+  /* "Ongoing" carries no information a visitor can act on, so it is never shown. */
+  const rawDuration = typeof service.duration === "string" ? service.duration.trim() : "";
+  const duration = rawDuration && !/^ongoing$/i.test(rawDuration) ? rawDuration : "";
 
   return (
     <>
@@ -105,9 +108,9 @@ export default function ServiceDetail() {
               </span>
               <div className="min-w-0">
                 <h1 className="font-heading text-3xl font-semibold leading-tight text-ink">{service.title}</h1>
-                {service.duration ? (
+                {duration ? (
                   <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted">
-                    <Clock size={14} /> {service.duration}
+                    <Clock size={14} /> {duration}
                   </p>
                 ) : null}
               </div>
@@ -156,8 +159,8 @@ export default function ServiceDetail() {
           <aside>
             <div className="card sticky top-28 p-8">
               <div className="mb-7 space-y-3 text-sm text-ink/70">
-                {service.duration ? (
-                  <p className="flex items-center gap-3"><Clock size={17} className="shrink-0 text-primary" /> {service.duration}</p>
+                {duration ? (
+                  <p className="flex items-center gap-3"><Clock size={17} className="shrink-0 text-primary" /> {duration}</p>
                 ) : null}
                 <p className="flex items-center gap-3"><Users size={17} className="shrink-0 text-primary" /> 1-on-1 with your nutritionist</p>
                 <p className="flex items-center gap-3"><Wallet size={17} className="shrink-0 text-primary" /> Flexible payment options</p>
