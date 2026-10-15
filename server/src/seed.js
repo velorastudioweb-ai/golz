@@ -19,6 +19,7 @@ const img = (id) => id;
 const SERVICES = [
   {
     title: "Weight Management",
+    emoji: "⚖️",
     icon: "Scale",
     image: "/media/gallery/2021-b-1/obesity-myths-and-facts-get-in-depth-understanding-webinar-april-2021-by-golz/obesity-1-1600.webp",
     category: "metabolic",
@@ -37,6 +38,7 @@ const SERVICES = [
   },
   {
     title: "Prevent & Manage Diabetes",
+    emoji: "🩸",
     icon: "Stethoscope",
     image: "/media/gallery/2019/one-day-workshop-enteral-nutrition-in-the-critically-dec-2019/pic-2-1600.webp",
     category: "metabolic",
@@ -55,6 +57,7 @@ const SERVICES = [
   },
   {
     title: "Thyroid & PCOS / Hormonal Health",
+    emoji: "🦋",
     icon: "Brain",
     image: "/media/gallery/2021-b-2/women-health-and-hormones-talk-special-program-lady-doctors-feb-2021/invited-webinar-for-lady-doctors-1-1600.webp",
     category: "metabolic",
@@ -73,6 +76,7 @@ const SERVICES = [
   },
   {
     title: "Heart Health",
+    emoji: "❤️",
     icon: "Heart",
     image: "/media/gallery/2017/nurses-empowerment-apollo-hospital-sep-2017/nurses-empowerment-national-nutrition-month-apollo-hospital-mysore-sept-2017-1-1600.webp",
     category: "metabolic",
@@ -91,6 +95,7 @@ const SERVICES = [
   },
   {
     title: "Pregnancy Nutrition",
+    emoji: "🤰",
     icon: "PersonStanding",
     image: "/media/gallery/2020/invited-program-to-wcd-7th-sep-2020/pictures-of-the-program-wcd-1600.webp",
     category: "family",
@@ -109,6 +114,7 @@ const SERVICES = [
   },
   {
     title: "Women's Health",
+    emoji: "🌸",
     icon: "Flower2",
     image: "/media/gallery/2017/bioclinica-corporates-march-2017/women-health-and-empowerment-bioclinica-corporates-march-2017-1-1600.webp",
     category: "family",
@@ -127,6 +133,7 @@ const SERVICES = [
   },
   {
     title: "Children's Health",
+    emoji: "🧒",
     icon: "Smile",
     image: "/media/gallery/2017/aiish-nov-2017/childrens-days-camp-to-celebrate-childrens-day-aiish-1600.webp",
     category: "family",
@@ -145,6 +152,7 @@ const SERVICES = [
   },
   {
     title: "Care for Old Age",
+    emoji: "🧓",
     icon: "Footprints",
     image: "/media/gallery/2021-b-2/webinar-for-senior-citizen-role-of-nutrition-in-aging-webinar-hisar-april-2021/senior-citizen-webinar3-1600.webp",
     category: "family",
@@ -163,6 +171,7 @@ const SERVICES = [
   },
   {
     title: "Specially-Abled Children",
+    emoji: "🌈",
     icon: "Accessibility",
     image: "/media/gallery/2020/dharwad-school-feb-2020/feb-2020-jss-dharwad-nutrition-for-cdifferently-abled-children-2-day-workshop-for-parents-and-caregivers-1600.webp",
     category: "specialised",
@@ -182,6 +191,7 @@ const SERVICES = [
   },
   {
     title: "Oncology Nutrition",
+    emoji: "🎗️",
     icon: "Cross",
     image: "/media/gallery/2024/30-mar-2024-cancer-infertility-roopanagar/20240330-162127-1600.webp",
     category: "specialised",
@@ -200,6 +210,7 @@ const SERVICES = [
   },
   {
     title: "Sports Nutrition",
+    emoji: "🏋️",
     icon: "Dumbbell",
     image: "/home-gallery/home-09.jpg",
     category: "performance",
@@ -218,6 +229,7 @@ const SERVICES = [
   },
   {
     title: "Nutrigenomics & Gut Health",
+    emoji: "🧬",
     icon: "Dna",
     image: "/media/gallery/2021-b-2/role-of-intestinal-microbiota-probiotics-in-health-and-disease-webinar-by-yakulth-aug-2021/role-of-probiotics-by-golz-in-collaboration-with-yakult-1600.webp",
     category: "performance",

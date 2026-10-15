@@ -33,6 +33,7 @@ export function normaliseService(raw) {
     title,
     slug,
     icon: asText(raw.icon) || "Sparkles",
+    emoji: asText(raw.emoji),
     image: asText(raw.image),
     category: asText(raw.category),
     shortDesc: asText(raw.shortDesc) || asText(raw.description).replace(/<[^>]*>/g, " ").trim().slice(0, 160),

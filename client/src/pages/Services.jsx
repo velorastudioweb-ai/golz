@@ -5,7 +5,7 @@ import { CheckCircle2, CalendarCheck, BadgeCheck, ArrowRight } from "lucide-reac
 import SEO from "../components/SEO";
 import Reveal from "../components/Reveal";
 import SectionHeading from "../components/SectionHeading";
-import { ICON_MAP } from "../utils/helpers";
+import ServiceIcon from "../components/ServiceIcon";
 import { FALLBACK_SERVICES, loadServices } from "../services/servicesApi";
 
 const CATEGORIES = [
@@ -67,7 +67,6 @@ export default function Services() {
   const canonical = typeof window !== "undefined" ? `${window.location.origin}/services` : "";
 
   const renderRow = (s, i) => {
-    const Icon = ICON_MAP.get(s.icon) || ICON_MAP.get("Sparkles");
     return (
       <Reveal key={s._id} delay={(i % 2) * 0.08}>
         <article className="card grid gap-8 p-8 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:p-10">
@@ -82,7 +81,7 @@ export default function Services() {
             ) : null}
             <div className="mb-4 flex items-center gap-4">
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-primary/10 text-primary">
-                {Icon && <Icon size={24} />}
+                <ServiceIcon service={s} size={24} />
               </span>
               <h3 className="font-heading text-[19px] font-semibold leading-snug text-ink">
                 <Link to={`/services/${s.slug}`} className="transition hover:text-primary">

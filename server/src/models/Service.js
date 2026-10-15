@@ -5,6 +5,7 @@ const schema = new mongoose.Schema(
     title: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, trim: true },
     icon: { type: String, default: "Sparkles" },
+    emoji: { type: String, default: "" },
     image: { type: String, default: "" },
     category: { type: String, default: "" },
     shortDesc: { type: String, default: "" },

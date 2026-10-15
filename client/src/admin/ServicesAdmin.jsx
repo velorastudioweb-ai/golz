@@ -5,6 +5,7 @@ import SEO from "../components/SEO";
 import PageLoader from "../components/PageLoader";
 import { Modal, ConfirmDialog, Toast, Field, Toggle, ListEditor, UploadInput, EmptyState, SortableList } from "./AdminUI";
 import { ICON_MAP, formatMoney } from "../utils/helpers";
+import ServiceIcon from "../components/ServiceIcon";
 
 const ICON_NAMES = ["Sparkles", "Flame", "Dumbbell", "HeartPulse", "Flower2", "Baby", "Medal", "Smile", "Heart", "Building2", "Pill", "Salad", "ShieldCheck", "Utensils", "Apple", "Activity", "Leaf", "Users", "Stethoscope"];
 
@@ -16,7 +17,7 @@ const CATEGORIES = [
   { id: "performance", label: "4 · Performance & Precision" },
 ];
 
-const EMPTY = { title: "", icon: "Sparkles", image: "", category: "", shortDesc: "", description: "", forWho: "", benefits: [], planCovers: [], credibility: "", suitableFor: [], duration: "", price: null, featured: false, published: true };
+const EMPTY = { title: "", icon: "Sparkles", emoji: "", image: "", category: "", shortDesc: "", description: "", forWho: "", benefits: [], planCovers: [], credibility: "", suitableFor: [], duration: "", price: null, featured: false, published: true };
 
 export default function ServicesAdmin() {
   const [items, setItems] = useState(null);
@@ -95,7 +96,6 @@ export default function ServicesAdmin() {
             onReorder={reorder}
             getKey={(s) => s._id}
             renderItem={(s) => {
-              const Icon = ICON_MAP.get(s.icon) || ICON_MAP.get("Sparkles");
               return (
                 <div className="flex items-center gap-4">
                   <div className="flex shrink-0 flex-col gap-0.5">
@@ -103,7 +103,7 @@ export default function ServicesAdmin() {
                     <button onClick={() => move(items.indexOf(s), 1)} disabled={items.indexOf(s) === items.length - 1} className="rounded p-0.5 text-charcoal/40 hover:text-primary disabled:opacity-20" aria-label="Move down"><ArrowDown size={13} /></button>
                   </div>
                   <img src={s.image} alt="" className="h-12 w-16 shrink-0 rounded-lg object-cover" />
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">{Icon && <Icon size={17} />}</span>
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"><ServiceIcon service={s} size={17} /></span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-heading text-sm font-semibold text-charcoal">{s.title}</p>
                     <p className="truncate text-xs text-charcoal/45">{s.shortDesc}</p>
@@ -159,6 +159,9 @@ export default function ServicesAdmin() {
                   );
                 })}
               </div>
+            </Field>
+            <Field label="Emoji" hint="Shown in place of the icon when filled — e.g. ⚖️ 🤰 🧬">
+              <input className="input" placeholder="⚖️" value={editing.emoji || ""} onChange={set("emoji")} />
             </Field>
             <Field label="For (who is this for)">
               <input className="input" placeholder="e.g. Prediabetes, Type 2 diabetes, or a family history of it." value={editing.forWho} onChange={set("forWho")} />

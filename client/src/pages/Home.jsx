@@ -12,7 +12,7 @@ import SectionHeading from "../components/SectionHeading";
 import BookingSection from "../components/BookingSection";
 import Lightbox, { PlayBadge } from "../components/Lightbox";
 import { FALLBACK_SERVICES, loadServices } from "../services/servicesApi";
-import { ICON_MAP } from "../utils/helpers";
+import ServiceIcon from "../components/ServiceIcon";
 import TestimonialsSection from "../components/TestimonialsSection";
 
 const FALLBACK_STATS = [
@@ -413,7 +413,6 @@ export default function Home() {
 
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((s, i) => {
-              const Icon = ICON_MAP.get(s.icon) || ICON_MAP.get("Sparkles");
               return (
                 <Reveal key={s._id} delay={(i % 3) * 0.08} className="h-full">
                   <Link
@@ -429,7 +428,7 @@ export default function Home() {
                       />
                     ) : null}
                     <span className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/5 text-primary transition-transform duration-300 ease-out group-hover:scale-110">
-                      {Icon && <Icon size={26} />}
+                      <ServiceIcon service={s} size={26} />
                     </span>
                     <h3 className="text-xl font-bold leading-snug text-ink transition-colors group-hover:text-primary sm:text-2xl">
                       {s.title}

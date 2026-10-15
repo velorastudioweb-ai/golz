@@ -18,4 +18,6 @@ console.log("ongoing durations left:", await db.collection("services").countDocu
 const about = await db.collection("settings").findOne({ key: "about" });
 console.log("award:", about.value.recognition[0]);
 console.log("speaking seeded:", !!about.value.speaking, "| affiliations seeded:", !!about.value.professionalAffiliations);
+const services = await db.collection("services").find({}).project({ slug: 1, emoji: 1 }).sort({ order: 1 }).toArray();
+console.log("emoji:", services.map((s) => `${s.slug}=${s.emoji || "-"}`).join(" | "));
 await client.close();

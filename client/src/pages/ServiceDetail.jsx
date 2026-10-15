@@ -5,7 +5,7 @@ import { ArrowLeft, BadgeCheck, CalendarCheck, CheckCircle2, Clock, Users, Walle
 import SEO from "../components/SEO";
 import PageHero from "../components/PageHero";
 import { useSite } from "../context/SiteContext";
-import { ICON_MAP } from "../utils/helpers";
+import ServiceIcon from "../components/ServiceIcon";
 import { loadService, localService } from "../services/servicesApi";
 
 /**
@@ -67,7 +67,6 @@ export default function ServiceDetail() {
     );
   }
 
-  const Icon = ICON_MAP.get(service.icon) || ICON_MAP.get("Sparkles");
   const planCovers = Array.isArray(service.planCovers) ? service.planCovers : [];
   const suitableFor = Array.isArray(service.suitableFor) ? service.suitableFor : [];
   /* "Ongoing" carries no information a visitor can act on, so it is never shown. */
@@ -104,7 +103,7 @@ export default function ServiceDetail() {
           >
             <div className="mb-10 flex items-center gap-4">
               <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] bg-sage text-primary">
-                {Icon ? <Icon size={28} /> : null}
+                <ServiceIcon service={service} size={28} />
               </span>
               <div className="min-w-0">
                 <h1 className="font-heading text-3xl font-semibold leading-tight text-ink">{service.title}</h1>

@@ -108,6 +108,51 @@ async function main() {
   const durations = await db.collection("services").updateMany({ duration: "Ongoing" }, { $set: { duration: "" } });
   console.log("durations matched/modified:", durations.matchedCount, durations.modifiedCount);
 
+  /* A real emoji says what each service is faster than a drawn glyph. */
+  const EMOJI = {
+    "weight-management": "⚖️",
+    "prevent-manage-diabetes": "🩸",
+    "thyroid-pcos-hormonal-health": "🦋",
+    "heart-health": "❤️",
+    "pregnancy-nutrition": "🤰",
+    "womens-health": "🌸",
+    "childrens-health": "🧒",
+    "care-for-old-age": "🧓",
+    "specially-abled-child": "🌈",
+    "oncology-nutrition": "🎗️",
+    "sports-nutrition": "🏋️",
+    "nutrigenomics-gut-health": "🧬",
+  };
+  const emojis = await db.collection("services").updateMany(
+    {},
+    [
+      {
+        $set: {
+          emoji: {
+            $ifNull: [
+              "$emoji",
+              {
+                $let: {
+                  vars: { pairs: Object.entries(EMOJI).map(([slug, emoji]) => ({ slug, emoji })) },
+                  in: {
+                    $reduce: {
+                      input: "$$pairs",
+                      initialValue: "",
+                      in: {
+                        $cond: [{ $eq: ["$$this.slug", "$slug"] }, "$$this.emoji", "$$value"],
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    ]
+  );
+  console.log("emojis matched/modified:", emojis.matchedCount, emojis.modifiedCount);
+
   const award = await db
     .collection("settings")
     .updateOne(
