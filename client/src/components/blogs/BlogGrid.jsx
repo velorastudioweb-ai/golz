@@ -16,7 +16,7 @@ export default function BlogGrid({ posts = [], hasFilters = false }) {
       return (
         <div className="rounded-[24px] border border-line bg-white px-6 py-16 text-center">
           <SearchX size={30} className="mx-auto text-primary" aria-hidden="true" />
-          <h3 className="mt-4 font-heading text-xl font-semibold text-ink">No articles match that search</h3>
+          <h3 className="card-title mt-4 text-ink">No articles match that search</h3>
           <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted">
             Try a different keyword, or browse every category to see the full library.
           </p>
@@ -29,7 +29,7 @@ export default function BlogGrid({ posts = [], hasFilters = false }) {
 
     return (
       <div className="rounded-[24px] border border-line bg-white px-6 py-16 text-center">
-        <h3 className="font-heading text-2xl font-semibold text-ink sm:text-3xl">New Insights Coming Soon</h3>
+        <h3 className="h3 text-ink">New Insights Coming Soon</h3>
         <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
           We’re preparing practical nutrition, wellness and healthy lifestyle articles from GOLZ. Check back soon.
         </p>

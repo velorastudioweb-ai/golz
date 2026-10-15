@@ -160,9 +160,6 @@ export default function ServicesAdmin() {
                 })}
               </div>
             </Field>
-            <Field label="Emoji" hint="Shown in place of the icon when filled — e.g. ⚖️ 🤰 🧬">
-              <input className="input" placeholder="⚖️" value={editing.emoji || ""} onChange={set("emoji")} />
-            </Field>
             <Field label="For (who is this for)">
               <input className="input" placeholder="e.g. Prediabetes, Type 2 diabetes, or a family history of it." value={editing.forWho} onChange={set("forWho")} />
             </Field>

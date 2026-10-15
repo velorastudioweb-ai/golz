@@ -22,8 +22,14 @@ const HERO_SUBTITLE =
 const HOMEPAGE_STATS = [
   { value: 19, suffix: "+", label: "Years of changing lives with nutrition and wellness programs" },
   { value: 13, suffix: "+", label: "Countries with global clientele" },
-  { value: 5000, suffix: "+", label: "Personalized diet plans delivered" },
-  { value: 3000, suffix: "+", label: "Specialized diet plans for children" },
+  { value: 8000, suffix: "+", label: "Personalized diet plans delivered" },
+];
+
+/* Exactly three metrics on About, same widths as the rest of the site. */
+const ABOUT_STATS = [
+  { value: 19, suffix: "+", label: "Years Experience" },
+  { value: 8000, suffix: "+", label: "Diet Plans Delivered" },
+  { value: 3000, suffix: "+", label: "Plans for Special Kids" },
 ];
 
 const SOCIALS = {
@@ -40,7 +46,10 @@ async function main() {
 
   const homepage = await db
     .collection("settings")
-    .updateOne({ key: "homepage" }, { $set: { "value.heroSubtitle": HERO_SUBTITLE, "value.stats": HOMEPAGE_STATS, "value.aboutPreview.text": NEW_BIO } });
+    .updateOne(
+      { key: "homepage" },
+      { $set: { "value.heroSubtitle": HERO_SUBTITLE, "value.stats": HOMEPAGE_STATS, "value.aboutPreview.text": NEW_BIO } }
+    );
   console.log("homepage matched/modified:", homepage.matchedCount, homepage.modifiedCount);
 
   const general = await db.collection("settings").updateOne({ key: "general" }, { $set: { "value.socials": SOCIALS } });
@@ -53,7 +62,9 @@ async function main() {
       {
         $set: {
           "value.bio": NEW_BIO,
+          "value.stats": ABOUT_STATS,
           "value.helpGroups.1.items": ["Pregnancy, GDM & lactation", "ASD/Autism & ADHD child nutrition", "Nutrigenomics, Gutbiomics"],
+          "value.specialNeeds.stat.value": 5000,
           "value.specialNeeds.text":
             "Specialised child nutrition is at the heart of Dr. Sushma's work — she's delivered over 3,000 diet plans for children with ASD/Autism, ADHD, and developmental needs, through institutions like AIISH (Mysore) and early-intervention school programs. Certified in Autism & ADHD Nutrition Therapy (Cambridge International Institute, UK), she builds gentle, practical plans that work with a child's sensitivities, not against them.",
         },
@@ -108,50 +119,60 @@ async function main() {
   const durations = await db.collection("services").updateMany({ duration: "Ongoing" }, { $set: { duration: "" } });
   console.log("durations matched/modified:", durations.matchedCount, durations.modifiedCount);
 
-  /* A real emoji says what each service is faster than a drawn glyph. */
-  const EMOJI = {
-    "weight-management": "⚖️",
-    "prevent-manage-diabetes": "🩸",
-    "thyroid-pcos-hormonal-health": "🦋",
-    "heart-health": "❤️",
-    "pregnancy-nutrition": "🤰",
-    "womens-health": "🌸",
-    "childrens-health": "🧒",
-    "care-for-old-age": "🧓",
-    "specially-abled-child": "🌈",
-    "oncology-nutrition": "🎗️",
-    "sports-nutrition": "🏋️",
-    "nutrigenomics-gut-health": "🧬",
+  /* Services are drawn with a lucide icon (emoji are no longer rendered), so
+     every record is guaranteed a valid icon key that the site can map. */
+  const ICONS = {
+    "weight-management": "Scale",
+    "prevent-manage-diabetes": "Stethoscope",
+    "thyroid-pcos-hormonal-health": "Brain",
+    "heart-health": "Heart",
+    "pregnancy-nutrition": "PersonStanding",
+    "womens-health": "Flower2",
+    "childrens-health": "Smile",
+    "care-for-old-age": "Footprints",
+    "specially-abled-child": "Accessibility",
+    "specially-abled-children": "Accessibility",
+    "oncology-nutrition": "Cross",
+    "sports-nutrition": "Dumbbell",
+    "nutrigenomics-gut-health": "Dna",
   };
-  const emojis = await db.collection("services").updateMany(
+  const icons = await db.collection("services").updateMany(
     {},
     [
       {
         $set: {
-          emoji: {
-            $ifNull: [
-              "$emoji",
-              {
-                $let: {
-                  vars: { pairs: Object.entries(EMOJI).map(([slug, emoji]) => ({ slug, emoji })) },
-                  in: {
-                    $reduce: {
-                      input: "$$pairs",
-                      initialValue: "",
-                      in: {
-                        $cond: [{ $eq: ["$$this.slug", "$slug"] }, "$$this.emoji", "$$value"],
+          icon: {
+            $let: {
+              vars: {
+                fallback: {
+                  $let: {
+                    vars: { pairs: Object.entries(ICONS).map(([slug, icon]) => ({ slug, icon })) },
+                    in: {
+                      $reduce: {
+                        input: "$$pairs",
+                        initialValue: "Sparkles",
+                        in: {
+                          $cond: [{ $eq: ["$$this.slug", "$slug"] }, "$$this.icon", "$$value"],
+                        },
                       },
                     },
                   },
                 },
               },
-            ],
+              in: {
+                $cond: [
+                  { $gt: [{ $strLenCP: { $ifNull: ["$icon", ""] } }, 0] },
+                  "$icon",
+                  "$$fallback",
+                ],
+              },
+            },
           },
         },
       },
     ]
   );
-  console.log("emojis matched/modified:", emojis.matchedCount, emojis.modifiedCount);
+  console.log("icons matched/modified:", icons.matchedCount, icons.modifiedCount);
 
   const award = await db
     .collection("settings")
@@ -209,7 +230,7 @@ async function main() {
   const homeStats = await db.collection("settings").updateOne({ key: "homepage" }, statStages);
   const aboutStats = await db
     .collection("settings")
-    .updateOne({ key: "about" }, [...statStages, { $set: { "value.specialNeeds.stat.value": 8000 } }]);
+    .updateOne({ key: "about" }, [...statStages, { $set: { "value.specialNeeds.stat.value": 5000 } }]);
   console.log(
     "diet-plan stats matched/modified:",
     homeStats.matchedCount, homeStats.modifiedCount,

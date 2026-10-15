@@ -34,10 +34,10 @@ export default function BlogHero({
               <span className="text-[#EEF3EA]/90">Blogs</span>
             </nav>
 
-            <h1 className="font-heading text-4xl font-semibold leading-[1.1] text-[#EEF3EA] sm:text-5xl lg:text-[58px]">
+            <h1 className="h1 text-[#EEF3EA]">
               {title}
             </h1>
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-[#DBE6D5]/80 sm:text-lg">{description}</p>
+            <p className="body-lg mt-5 max-w-xl text-[#DBE6D5]/80">{description}</p>
           </motion.div>
 
           <motion.div

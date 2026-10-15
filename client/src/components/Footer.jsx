@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Leaf, Phone, Mail, MapPin, Clock, Facebook, Instagram, Youtube, Twitter, Linkedin,
@@ -19,6 +20,8 @@ export default function Footer() {
   const { site } = useSite();
   const g = site.general || {};
   const year = new Date().getFullYear();
+  /* GOLZ badge first; the drawn mark only if the image fails to load. */
+  const [logoOk, setLogoOk] = useState(true);
 
   /* Contact details are the one thing a visitor must never lose, so they fall
      back to the published clinic numbers when the settings payload is absent. */
@@ -37,10 +40,19 @@ export default function Footer() {
     <footer className="bg-primary text-[#DBE6D5]/85">
       <div className="container-x grid gap-10 py-16 sm:grid-cols-2 lg:grid-cols-3">
         <div>
-          <div className="mb-5 flex items-center gap-2.5">
-            <span className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-white/10 text-lime">
-              <Leaf size={22} />
-            </span>
+          <div className="mb-5 flex items-center gap-3">
+            {logoOk ? (
+              <img
+                src="/logo.png"
+                alt={g.clinicName || "GOLZ (Giggles of Livez)"}
+                onError={() => setLogoOk(false)}
+                className="h-16 w-auto shrink-0 object-contain"
+              />
+            ) : (
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-white/10 text-lime">
+                <Leaf size={22} />
+              </span>
+            )}
             <span className="font-heading text-lg font-semibold text-[#EEF3EA]">{g.clinicName || "GOLZ (Giggles of Livez)"}</span>
           </div>
           <p className="mb-6 text-sm leading-relaxed">
@@ -58,7 +70,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="mb-5 font-heading text-base font-semibold text-[#EEF3EA]">Quick Links</h3>
+          <h3 className="card-title mb-5 text-[#EEF3EA]">Quick Links</h3>
           <ul className="space-y-2.5 text-sm">
             {[
               ["Home", "/"], ["About Us", "/about"], ["Services", "/services"],
@@ -74,7 +86,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="mb-5 font-heading text-base font-semibold text-[#EEF3EA]">Contact & Hours</h3>
+          <h3 className="card-title mb-5 text-[#EEF3EA]">Contact & Hours</h3>
           <ul className="space-y-4 text-sm">
             <li className="flex gap-3"><MapPin size={18} className="mt-0.5 shrink-0 text-lime" /><span>{g.address || "@Kshema Healthcare, #338, Bogadi Main Road, Bogadi, Mysuru 570026"}</span></li>
             <li className="flex gap-3"><Phone size={18} className="shrink-0 text-lime" /><a href={`tel:${phone.replace(/\s/g, "")}`} className="transition hover:text-lime">{phone}</a></li>

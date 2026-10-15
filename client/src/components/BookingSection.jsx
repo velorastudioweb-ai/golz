@@ -22,10 +22,10 @@ function ClinicBlock({ title, badge, address, directionsUrl }) {
     <div className="flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between">
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2.5">
-          <h3 className="font-heading text-lg font-semibold text-ink">{title}</h3>
+          <h3 className="h3 text-ink">{title}</h3>
           {badge}
         </div>
-        <p className="mt-2 whitespace-pre-line text-[15px] leading-relaxed text-muted">{address}</p>
+        <p className="body mt-2 whitespace-pre-line text-muted">{address}</p>
       </div>
       <a
         href={directionsUrl}
@@ -90,7 +90,7 @@ function BookingSection() {
             <div className="rounded-[28px] border border-[#ECEFEA] bg-white p-8 shadow-[0_20px_60px_rgba(0,0,0,0.08)] sm:p-10">
               <div className="flex items-center gap-3 border-b border-gray-100 pb-7">
                 <MapPin size={20} className="shrink-0 text-primary" />
-                <h2 className="font-heading text-xl font-bold text-ink">Clinic Locations</h2>
+                <h2 className="h3 text-ink">Clinic Locations</h2>
               </div>
 
               <div className="divide-y divide-gray-100">
@@ -110,7 +110,7 @@ function BookingSection() {
               <div className="border-t border-gray-100 pt-7">
                 <div className="flex items-center gap-3">
                   <Clock3 size={20} className="shrink-0 text-primary" />
-                  <h3 className="font-heading text-xl font-bold text-ink">Consultation Hours</h3>
+                  <h3 className="h3 text-ink">Consultation Hours</h3>
                 </div>
                 <div className="mt-5 space-y-5 text-[15px]">
                   <div>

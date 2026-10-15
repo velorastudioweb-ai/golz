@@ -16,11 +16,11 @@ export default function GalleryEmptyState() {
           <Camera size={30} aria-hidden="true" />
         </span>
 
-        <h2 className="mt-7 font-heading text-3xl font-semibold leading-tight text-ink sm:text-4xl">
+        <h2 className="h2 mt-7 text-ink">
           Gallery Coming Soon
         </h2>
 
-        <p className="mx-auto mt-5 text-base leading-[1.8] text-muted">
+        <p className="body-lg mx-auto mt-5 text-muted">
           We&rsquo;re preparing moments from GOLZ nutrition, workshops, recipes and wellness events. Check back soon.
         </p>
 

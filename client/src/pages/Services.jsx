@@ -83,7 +83,7 @@ export default function Services() {
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-primary/10 text-primary">
                 <ServiceIcon service={s} size={24} />
               </span>
-              <h3 className="font-heading text-[19px] font-semibold leading-snug text-ink">
+              <h3 className="card-title leading-snug text-ink">
                 <Link to={`/services/${s.slug}`} className="transition hover:text-primary">
                   {s.title}
                 </Link>
@@ -95,7 +95,7 @@ export default function Services() {
                 {s.forWho}
               </p>
             ) : null}
-            <p className="text-[15px] leading-relaxed text-ink/70">{s.description}</p>
+            <p className="body text-ink/70">{s.description}</p>
           </div>
           <div className="flex flex-col justify-between gap-6 border-t border-line pt-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
             <div>
@@ -160,10 +160,10 @@ export default function Services() {
             <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-line bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-primary backdrop-blur">
               <BadgeCheck size={15} /> Services
             </span>
-            <h1 className="text-[34px] font-bold leading-[1.1] tracking-tight text-ink sm:text-5xl lg:text-[64px]">
+            <h1 className="h1 text-ink">
               Nutrition &amp; care for every stage of life
             </h1>
-            <p className="mx-auto mt-5 max-w-[600px] text-base leading-relaxed text-muted sm:text-lg lg:mx-0">
+            <p className="body-lg mx-auto mt-5 max-w-[600px] text-muted lg:mx-0">
               From weight and diabetes to pregnancy, children's health and special needs — every plan is built around
               your body, your goals and your food habits. No fad diets. No crash plans. Just science-backed nutrition you
               can actually live with.
@@ -289,7 +289,7 @@ export default function Services() {
                   <span className="mb-5 flex h-11 w-11 items-center justify-center rounded-full bg-lime font-heading text-lg font-semibold text-ink">
                     {i + 1}
                   </span>
-                  <h3 className="mb-2 font-heading text-[19px] font-semibold text-[#EEF3EA]">{step.title}</h3>
+                  <h3 className="card-title mb-2 text-[#EEF3EA]">{step.title}</h3>
                   <p className="text-sm leading-relaxed text-[#A9C0A0]">{step.text}</p>
                 </div>
               </Reveal>

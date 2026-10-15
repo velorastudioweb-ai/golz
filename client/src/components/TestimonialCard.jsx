@@ -66,7 +66,7 @@ function TestimonialCard({ item }) {
           </span>
         )}
         <div className="min-w-0">
-          <h3 className="truncate text-xl font-bold text-[#111827]">{name}</h3>
+          <h3 className="h3 truncate text-[#111827]">{name}</h3>
           {role && <p className="truncate text-base text-[#6B7280]">{role}</p>}
         </div>
       </footer>

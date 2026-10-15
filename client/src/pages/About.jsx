@@ -83,7 +83,7 @@ const FB = {
     heading: "Nutrition for children with special needs",
     text: "Specialised child nutrition is at the heart of Dr. Sushma's work — she's delivered over 3,000 diet plans for children with ASD/Autism, ADHD, and developmental needs, through institutions like AIISH (Mysore) and early-intervention school programs. Certified in Autism & ADHD Nutrition Therapy (Cambridge International Institute, UK), she builds gentle, practical plans that work with a child's sensitivities, not against them.",
     stat: {
-      value: 8000,
+      value: 5000,
       suffix: "+",
       label: "diet plans delivered for children with special needs",
     },
@@ -134,7 +134,6 @@ const FB = {
   vision: "A world where personalized nutrition is the first line of defence against lifestyle disease, not the last resort.",
   stats: [
     { value: 19, suffix: "+", label: "Years Experience" },
-    { value: 15000, suffix: "+", label: "Programs Completed" },
     { value: 8000, suffix: "+", label: "Diet Plans Delivered" },
     { value: 3000, suffix: "+", label: "Plans for Special Kids" },
   ],
@@ -219,12 +218,12 @@ export default function About() {
           </Reveal>
           <div className="order-1 lg:order-2">
             <SectionHeading center={false} eyebrow="The Story" title={name || "Your Nutritionist"} />
-            <div className="mt-5 space-y-4 text-base leading-relaxed text-ink/75">
+            <div className="body mt-5 space-y-4 text-ink/75">
               {story.split(/\n{2,}/).map((para) => (
                 <p key={para.slice(0, 24)}>{para}</p>
               ))}
             </div>
-            <p className="mt-6 rounded-[18px] border border-line bg-sage/50 p-6 text-[15px] leading-relaxed text-ink/75">
+            <p className="body mt-6 rounded-[18px] border border-line bg-sage/50 p-6 text-ink/75">
               <Quote size={20} className="mb-2 text-primary" />
               {approach}
             </p>
@@ -250,7 +249,7 @@ export default function About() {
                       <span className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-primary/10 text-primary">
                         {Icon && <Icon size={24} />}
                       </span>
-                      <h3 className="font-heading text-[19px] font-semibold text-ink">{group.title}</h3>
+                      <h3 className="card-title text-ink">{group.title}</h3>
                     </div>
                     <div className="flex flex-wrap gap-2.5">
                       {(group.items || []).map((item) => (
@@ -276,10 +275,10 @@ export default function About() {
             <span className="mb-6 inline-flex items-center gap-2 rounded-full bg-lime px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-ink">
               <HeartPulse size={14} /> Core Specialisation
             </span>
-            <h2 className="font-heading text-4xl font-semibold leading-tight text-[#EEF3EA] lg:text-[46px]">
+            <h2 className="h2 text-[#EEF3EA]">
               {sn.heading}
             </h2>
-            <p className="mt-6 text-base leading-relaxed text-[#DBE6D5]/90">{sn.text}</p>
+            <p className="body mt-6 text-[#DBE6D5]/90">{sn.text}</p>
             <p className="mt-8 flex items-start gap-3 rounded-[18px] border border-lime/40 bg-white/5 px-6 py-4 text-sm font-medium leading-relaxed text-[#EEF3EA]">
               <BadgeCheck size={20} className="mt-0.5 shrink-0 text-lime" /> {sn.credibility}
             </p>
@@ -289,7 +288,7 @@ export default function About() {
           </Reveal>
           <Reveal delay={0.15}>
             <div className="rounded-[180px_180px_22px_22px] border border-white/15 bg-white/5 p-10 text-center lg:p-14">
-              <p className="font-heading text-7xl font-semibold text-lime">
+              <p className="font-heading stat-value font-semibold text-lime">
                 <CountUp value={sn.stat.value} suffix={sn.stat.suffix} />
               </p>
               <p className="mx-auto mt-3 max-w-xs text-sm leading-relaxed text-[#A9C0A0]">
@@ -398,7 +397,7 @@ export default function About() {
               eyebrow="Beyond The Clinic"
               title="Nurturing Nutrition academically"
             />
-            <p className="text-base leading-relaxed text-ink/75">{beyondClinic}</p>
+            <p className="body text-ink/75">{beyondClinic}</p>
             <div className="mt-8 flex flex-wrap items-center gap-2.5">
               <span className="text-xs font-semibold uppercase tracking-widest text-muted">Life member —</span>
               {affiliations.split("·").map((af) => (
@@ -412,12 +411,12 @@ export default function About() {
             <div className="card p-8">
               <div className="mb-6 flex items-center gap-3">
                 <span className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-lime text-ink"><Target size={24} /></span>
-                <h3 className="font-heading text-[19px] font-semibold text-ink">Our Mission</h3>
+                <h3 className="card-title text-ink">Our Mission</h3>
               </div>
               <p className="text-sm leading-relaxed text-ink/70">{mission}</p>
               <div className="mt-8 mb-6 flex items-center gap-3">
                 <span className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-primary/10 text-primary"><Eye size={24} /></span>
-                <h3 className="font-heading text-[19px] font-semibold text-ink">Our Vision</h3>
+                <h3 className="card-title text-ink">Our Vision</h3>
               </div>
               <p className="text-sm leading-relaxed text-ink/70">{vision}</p>
             </div>
@@ -428,10 +427,10 @@ export default function About() {
       {/* ================= STATS ================= */}
       <section className="section-pad pt-0">
         <div className="container-x">
-          <Reveal className="grid grid-cols-2 gap-6 rounded-[24px] bg-primary p-8 shadow-lift sm:gap-8 sm:p-10 lg:grid-cols-4">
+          <Reveal className="grid grid-cols-1 gap-6 rounded-[24px] bg-primary p-8 shadow-lift sm:grid-cols-3 sm:gap-8 sm:p-10">
             {stats.map((s) => (
               <div key={s.label} className="text-center">
-                <p className="font-heading text-4xl font-semibold text-lime">
+                <p className="font-heading stat-value font-semibold text-lime">
                   <CountUp value={Number(s.value)} suffix={s.suffix} />
                 </p>
                 <p className="mt-1.5 text-sm text-[#DBE6D5]/80">{s.label}</p>

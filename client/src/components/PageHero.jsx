@@ -31,8 +31,8 @@ export default function PageHero({ title, subtitle, breadcrumb, image }) {
               ))}
             </nav>
           )}
-          <h1 className="text-4xl font-semibold leading-tight text-[#EEF3EA] sm:text-5xl">{title}</h1>
-          {subtitle && <p className="mt-5 max-w-xl text-lg leading-relaxed text-[#DBE6D5]/80">{subtitle}</p>}
+          <h1 className="h1 text-[#EEF3EA]">{title}</h1>
+          {subtitle && <p className="lead mt-5 max-w-xl text-[#DBE6D5]/80">{subtitle}</p>}
         </motion.div>
       </div>
     </section>

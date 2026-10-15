@@ -26,11 +26,11 @@ export default function GalleryHero({
               The GOLZ Gallery
             </span>
 
-            <h1 className="mt-6 font-heading text-[34px] font-semibold leading-[1.08] tracking-tight text-[#EEF3EA] sm:text-[46px] lg:text-[58px] lg:leading-[1.05]">
+            <h1 className="h1 mt-6 text-[#EEF3EA]">
               {title}
             </h1>
 
-            <p className="mt-6 max-w-2xl text-base leading-[1.75] text-[#DBE6D5]/85 sm:text-lg">
+            <p className="lead mt-6 max-w-2xl text-[#DBE6D5]/85">
               {description}
             </p>
           </motion.div>

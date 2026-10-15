@@ -177,7 +177,7 @@ export default function Blog() {
               {rest.length ? (
                 <>
                   <div className="mb-6 flex items-baseline justify-between gap-4 border-b border-line pb-3">
-                    <h2 className="font-heading text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+                    <h2 className="card-title tracking-tight text-ink">
                       {hasFilters ? "Matching Articles" : "All Articles"}
                     </h2>
                     <p className="text-sm text-muted" aria-live="polite">
@@ -224,10 +224,10 @@ export default function Blog() {
       {posts.length ? (
         <section className="bg-section-sage section-pad">
           <div className="container-x text-center">
-            <h2 className="font-heading text-3xl font-semibold text-ink sm:text-4xl">
+            <h2 className="h2 text-ink">
               Ready to eat better, feel better?
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted">
+            <p className="body-lg mx-auto mt-4 max-w-xl text-muted">
               Every article here is written to be useful on its own. A consultation takes it further with a plan built
               around your goals, your routine and your body.
             </p>

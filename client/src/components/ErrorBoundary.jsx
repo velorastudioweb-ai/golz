@@ -37,10 +37,10 @@ export default class ErrorBoundary extends Component {
           <span className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gold/10 text-gold">
             <AlertTriangle size={30} strokeWidth={1.6} aria-hidden="true" />
           </span>
-          <h1 className="font-heading text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+          <h1 className="h2 text-ink">
             This page ran into a problem
           </h1>
-          <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-muted">
+          <p className="body-lg mx-auto mt-4 max-w-md text-muted">
             Something on our side stopped working. The rest of the site is still
             fine — try loading this page again, or head back to the homepage.
           </p>

@@ -8,8 +8,8 @@ export default function SectionHeading({ eyebrow, title, subtitle, center = true
           {eyebrow}
         </span>
       )}
-      <h2 className={`text-3xl font-semibold leading-tight sm:text-4xl lg:text-[46px] lg:leading-[1.1] ${light ? "text-[#EEF3EA]" : "text-ink"}`}>{title}</h2>
-      {subtitle && <p className={`mx-auto mt-4 max-w-[600px] text-base leading-relaxed sm:text-lg ${light ? "text-[#9FB4A5]" : "text-muted"}`}>{subtitle}</p>}
+      <h2 className={`h2 ${light ? "text-[#EEF3EA]" : "text-ink"}`}>{title}</h2>
+      {subtitle && <p className={`body-lg mx-auto mt-4 max-w-[600px] ${light ? "text-[#9FB4A5]" : "text-muted"}`}>{subtitle}</p>}
     </Reveal>
   );
 }

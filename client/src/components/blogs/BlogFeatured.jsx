@@ -57,7 +57,7 @@ export default function BlogFeatured({ blog }) {
             </Link>
           ) : null}
 
-          <h3 className="font-heading text-2xl font-semibold leading-tight text-ink sm:text-3xl">
+          <h3 className="h3 leading-tight text-ink">
             <Link to={href} className="transition-colors after:absolute after:inset-0 hover:text-primary focus-visible:outline-none">
               {blog.title}
             </Link>

@@ -16,6 +16,9 @@ export default function Header() {
   const { site } = useSite();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  /* The supplied GOLZ badge ships with the bundle; the drawn mark stands in
+     only if the image ever fails to load. */
+  const [logoOk, setLogoOk] = useState(true);
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -45,9 +48,18 @@ export default function Header() {
       >
         <div className="container-x flex h-[72px] items-center justify-between gap-4">
           <Link to="/" className="flex min-w-0 items-center gap-2.5" aria-label="Home">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-primary text-white shadow-soft">
-              <Leaf size={22} />
-            </span>
+            {logoOk ? (
+              <img
+                src="/logo.png"
+                alt={name}
+                onError={() => setLogoOk(false)}
+                className="h-12 w-auto shrink-0 object-contain"
+              />
+            ) : (
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-primary text-white shadow-soft">
+                <Leaf size={22} />
+              </span>
+            )}
             <span className="min-w-0 leading-tight">
               <span className="block truncate font-heading text-lg font-semibold text-ink">{name}</span>
               <span className="hidden text-[11px] tracking-wide text-muted sm:block">{site.general?.tagline || "Personalized Nutrition"}</span>

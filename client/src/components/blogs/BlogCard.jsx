@@ -61,7 +61,7 @@ export default function BlogCard({ blog, eager = false }) {
         </div>
 
         {title ? (
-          <h3 className="font-heading text-[19px] font-semibold leading-snug text-ink transition-colors group-hover:text-primary">
+          <h3 className="card-title leading-snug text-ink transition-colors group-hover:text-primary">
             <Link
               to={href}
               className="after:absolute after:inset-0 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/25"

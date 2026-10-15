@@ -73,7 +73,7 @@ export default function Contact() {
             ].map(({ Icon, title, lines }, i) => (
               <motion.div key={title} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }} className="card p-6 text-center">
                 <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 p-3.5 text-primary"><Icon size={24} /></span>
-                <h3 className="mb-1.5 font-heading font-semibold text-charcoal">{title}</h3>
+                <h3 className="card-title mb-1.5 text-charcoal">{title}</h3>
                 {lines.map((l) => <p key={l} className="text-sm text-charcoal/60">{l}</p>)}
               </motion.div>
             ))}
@@ -82,7 +82,7 @@ export default function Contact() {
           <div className="grid gap-12 lg:grid-cols-[1fr_1.1fr]">
             {/* Form */}
             <motion.div initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
-              <h2 className="mb-2 font-heading text-2xl font-bold text-charcoal">Book a Consultation</h2>
+              <h2 className="h3 mb-2 text-charcoal">Book a Consultation</h2>
               <p className="mb-7 text-sm text-charcoal/55">
                 Fill in your details below — on submit, they open in WhatsApp for us to confirm your consultation.
               </p>
@@ -160,7 +160,7 @@ export default function Contact() {
             <motion.div initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
               <div className="card mb-8 overflow-hidden p-0">
                 <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-                  <h3 className="font-heading font-semibold text-charcoal">Working Hours</h3>
+                  <h3 className="card-title text-charcoal">Working Hours</h3>
                   <Clock size={18} className="text-primary" />
                 </div>
                 <div className="divide-y divide-gray-50 px-6">
@@ -188,7 +188,7 @@ export default function Contact() {
               </div>
 
               <div className="rounded-3xl bg-gradient-to-br from-primary to-primary-dark p-7 text-white shadow-lift">
-                <h3 className="mb-2 font-heading text-lg font-bold">Prefer WhatsApp?</h3>
+                <h3 className="h3 mb-2">Prefer WhatsApp?</h3>
                 <p className="mb-4 text-sm text-white/80">Message us anytime — we'll get back to you within working hours.</p>
                 <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="btn-gold !bg-white !text-primary">
                   <MessageCircle size={17} /> Chat on WhatsApp

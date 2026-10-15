@@ -47,7 +47,7 @@ export default function ServiceDetail() {
     return (
       <section className="section-pad pt-[140px]">
         <div className="container-x text-center">
-          <h1 className="font-heading text-3xl font-semibold text-ink">Service not found</h1>
+          <h1 className="h2 text-ink">Service not found</h1>
           <p className="mx-auto mt-3 max-w-md text-muted">That service is no longer available. Browse the full range below.</p>
           <Link to="/services" className="btn-primary mt-8">
             <ArrowLeft size={17} /> Back to Services
@@ -106,7 +106,7 @@ export default function ServiceDetail() {
                 <ServiceIcon service={service} size={28} />
               </span>
               <div className="min-w-0">
-                <h1 className="font-heading text-3xl font-semibold leading-tight text-ink">{service.title}</h1>
+                <h2 className="h3 text-ink">{service.title}</h2>
                 {duration ? (
                   <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted">
                     <Clock size={14} /> {duration}
@@ -126,7 +126,7 @@ export default function ServiceDetail() {
 
             {planCovers.length > 0 ? (
               <>
-                <h2 className="mb-5 mt-12 font-heading text-2xl font-semibold text-ink">What Your Plan Covers</h2>
+                <h2 className="h3 mb-5 mt-12 text-ink">What Your Plan Covers</h2>
                 <ul className="grid gap-3 sm:grid-cols-2">
                   {planCovers.map((item) => (
                     <li key={item} className="flex items-start gap-3 rounded-[18px] border border-line bg-white p-4 text-sm font-medium leading-relaxed text-ink/80">
@@ -145,7 +145,7 @@ export default function ServiceDetail() {
 
             {suitableFor.length > 0 ? (
               <>
-                <h2 className="mb-4 mt-12 font-heading text-2xl font-semibold text-ink">Who Should Choose This</h2>
+                <h2 className="h3 mb-4 mt-12 text-ink">Who Should Choose This</h2>
                 <ul className="flex flex-wrap gap-3">
                   {suitableFor.map((item) => (
                     <li key={item} className="chip !cursor-default">{item}</li>

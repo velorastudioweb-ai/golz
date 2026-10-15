@@ -19,7 +19,6 @@ const FALLBACK_STATS = [
   { value: 19, suffix: "+", label: "Years of changing lives with nutrition and wellness programs" },
   { value: 13, suffix: "+", label: "Countries with global clientele" },
   { value: 8000, suffix: "+", label: "Personalized diet plans delivered" },
-  { value: 3000, suffix: "+", label: "Specialized diet plans for children" },
 ];
 
 /* Success Stories returns null on an empty list, so these three published
@@ -148,8 +147,10 @@ const HOME_GALLERY_CAPTIONS = {
   12: "IKMC 2018, Hyderabad",
 };
 
-/* Photos of awards, honours and press recognition — the default tab. */
-const AWARD_PHOTOS = new Set([2, 7, 11]);
+/* Photos of awards, honours, certificates and press recognition. Everything
+   else in the home gallery is a milestone of the journey, so the two tabs
+   between them cover all twelve photos. */
+const AWARD_PHOTOS = new Set([2, 7, 11, 12]);
 
 const LOCAL_HOME_GALLERY = Array.from({ length: 12 }, (_, i) => {
   const n = i + 1;
@@ -177,7 +178,7 @@ const LOCAL_HOME_GALLERY = Array.from({ length: 12 }, (_, i) => {
 
 const GALLERY_TABS = [
   { id: "awards", label: "Awards / Recognitions" },
-  { id: "all", label: "All Photos" },
+  { id: "milestones", label: "Milestones" },
 ];
 
 export default function Home() {
@@ -211,8 +212,9 @@ export default function Home() {
   /* The home preview shows only the client's own home-gallery photos; the full
      archive lives behind "View Gallery". */
   const [galleryTab, setGalleryTab] = useState(GALLERY_TABS[0].id);
-  const homeGallery =
-    galleryTab === "all" ? LOCAL_HOME_GALLERY : LOCAL_HOME_GALLERY.filter((g) => g.award);
+  const homeGallery = LOCAL_HOME_GALLERY.filter((g) =>
+    galleryTab === "awards" ? g.award : !g.award
+  );
   /* The lightbox walks whichever tab is on screen, so next/previous follow the grid. */
   const lightboxItems = homeGallery;
 
@@ -252,10 +254,10 @@ export default function Home() {
                   <BadgeCheck size={15} /> {h.heroBadge}
                 </span>
               )}
-              <h1 className="mx-auto max-w-[640px] text-[34px] font-bold leading-[1.1] tracking-tight text-ink sm:text-5xl lg:mx-0 lg:text-[64px] xl:text-[68px]">
+              <h1 className="h1 mx-auto max-w-[640px] text-ink lg:mx-0">
                 {h.heroTitle || "Real food. Real plans. Real results—built around you."}
               </h1>
-              <p className="mx-auto mt-5 max-w-[600px] text-base leading-relaxed text-muted sm:text-lg lg:mx-0 lg:text-xl">
+              <p className="lead mx-auto mt-5 max-w-[600px] text-muted lg:mx-0">
                 {h.heroSubtitle || "GOLZ is a science-backed platform offering personalized nutrition plans designed to improve your health without giving up the foods you love, serving a global clientele with clinical nutrition."}
               </p>
               <div className="mt-8 flex justify-center lg:justify-start">
@@ -310,11 +312,11 @@ export default function Home() {
       {/* ================= STATISTICS ================= */}
       <section className="bg-sageLight section-pad">
         <div className="container-x">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
             {(h.stats?.length ? h.stats : FALLBACK_STATS).map((s, i) => (
               <Reveal key={s.label} delay={i * 0.08}>
                 <div className="group flex min-h-[170px] flex-col items-center justify-center rounded-[24px] border border-ink/5 bg-white p-6 text-center shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lift">
-                  <p className="font-heading text-4xl font-bold tracking-tight text-primary sm:text-5xl">
+                  <p className="font-heading stat-value font-bold text-primary">
                     <CountUp value={Number(s.value)} suffix={s.suffix} />
                   </p>
                   <p className="mx-auto mt-2.5 max-w-[200px] text-sm font-medium leading-snug text-muted">{s.label}</p>
@@ -335,14 +337,14 @@ export default function Home() {
             <span className="mb-6 inline-flex items-center gap-2 rounded-full bg-lime px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-ink">
               <Leaf size={14} /> About the Founder
             </span>
-            <h2 className="font-heading text-4xl font-semibold leading-tight text-[#EEF3EA] lg:text-[46px]">
+            <h2 className="font-heading h2 text-[#EEF3EA]">
               {h.aboutPreview?.title || "Meet Dr. Sushma Appaiah"}
             </h2>
             <p className="mt-3 text-sm font-semibold uppercase tracking-[0.2em] text-lime">
               {site.about?.designation || "Founder — Clinical Nutritionist & Wellness Counsellor"}
             </p>
 
-            <div className="mx-auto mt-6 max-w-[620px] space-y-4 text-[15px] leading-[1.85] text-[#DBE6D5]/90 lg:mx-0">
+            <div className="body-lg mx-auto mt-6 max-w-[620px] space-y-4 text-[#DBE6D5]/90 lg:mx-0">
               {(h.aboutPreview?.text || FOUNDER_BIO).split(/\n{2,}/).map((para) => (
                 <p key={para.slice(0, 24)}>{para}</p>
               ))}
@@ -354,7 +356,7 @@ export default function Home() {
                 { value: 8000, suffix: "+", label: "Diet Plans" },
               ].map((s) => (
                 <div key={s.label} className="px-2 text-center sm:px-4">
-                  <p className="font-heading text-2xl font-semibold text-lime sm:text-4xl">
+                  <p className="font-heading stat-value font-semibold text-lime">
                     <CountUp value={s.value} suffix={s.suffix} />
                   </p>
                   <p className="mt-1.5 text-[11px] font-medium uppercase tracking-wider text-[#A9C0A0] sm:text-xs">{s.label}</p>
@@ -416,10 +418,10 @@ export default function Home() {
             <span className="mb-6 inline-flex items-center rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
               Services
             </span>
-            <h2 className="text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl lg:text-[46px]">
-              NUTRITION &amp; CARE FOR EVERY LIFE STAGE TO MEET YOUR GOALS &amp; HEALTH NEEDS
+            <h2 className="h2 text-ink">
+              Nutrition &amp; care for every life stage to meet your goals &amp; health needs
             </h2>
-            <p className="mx-auto mt-5 max-w-[600px] text-base leading-[1.8] text-muted sm:text-lg">
+            <p className="body-lg mx-auto mt-5 max-w-[600px] text-muted">
               From weight management and diabetes care to pregnancy, children's nutrition, sports nutrition, oncology, and healthy aging, every nutrition plan is personalized to your body, goals, medical history, and food preferences.
             </p>
           </Reveal>
@@ -443,10 +445,10 @@ export default function Home() {
                     <span className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/5 text-primary transition-transform duration-300 ease-out group-hover:scale-110">
                       <ServiceIcon service={s} size={26} />
                     </span>
-                    <h3 className="text-xl font-bold leading-snug text-ink transition-colors group-hover:text-primary sm:text-2xl">
+                    <h3 className="h3 leading-snug text-ink transition-colors group-hover:text-primary">
                       {s.title}
                     </h3>
-                    <p className="mt-3 text-[15px] leading-[1.8] text-muted">{s.shortDesc}</p>
+                    <p className="body mt-3 text-muted">{s.shortDesc}</p>
                   </Link>
                 </Reveal>
               );
@@ -462,10 +464,10 @@ export default function Home() {
             <span className="mb-6 inline-flex items-center rounded-full border border-primary/30 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
               Steps
             </span>
-            <h2 className="text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl lg:text-[46px]">
+            <h2 className="h2 text-ink">
               How It Works
             </h2>
-            <p className="mx-auto mt-5 max-w-[600px] text-base leading-[1.8] text-muted sm:text-lg">
+            <p className="body-lg mx-auto mt-5 max-w-[600px] text-muted">
               Precision nutrition, step by step — every plan is built on real data about your body and fine-tuned as you progress.
             </p>
           </Reveal>
@@ -499,8 +501,8 @@ export default function Home() {
                     {step.no}
                   </p>
                   <span className="mt-5 block h-px w-12 bg-lime" />
-                  <h3 className="mt-4 text-xl font-bold leading-snug text-ink">{step.title}</h3>
-                  <p className="mt-3 text-[18px] leading-[1.75] text-muted">{step.text}</p>
+                  <h3 className="h3 mt-4 leading-snug text-ink">{step.title}</h3>
+                  <p className="body-lg mt-3 text-muted">{step.text}</p>
                 </div>
               </Reveal>
             ))}
@@ -534,7 +536,9 @@ export default function Home() {
           </div>
           <div
             className={`grid gap-2 sm:gap-3 lg:gap-4 ${
-              homeGallery.length <= 3 ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-4"
+              homeGallery.length <= 3
+                ? "grid-cols-1 sm:grid-cols-3"
+                : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
             }`}
           >
             {homeGallery.map((g, i) => (

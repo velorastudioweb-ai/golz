@@ -362,7 +362,6 @@ const HOMEPAGE = {
     { value: 19, suffix: "+", label: "Years of changing lives with nutrition and wellness programs" },
     { value: 13, suffix: "+", label: "Countries with global clientele" },
     { value: 8000, suffix: "+", label: "Personalized diet plans delivered" },
-    { value: 3000, suffix: "+", label: "Specialized diet plans for children" },
   ],
   trustItems: [
     { title: "Certified Nutrition Expert", text: "Ph.D. — CSIR-CFTRI, Mysuru" },
@@ -424,7 +423,7 @@ const ABOUT = {
   specialNeeds: {
     heading: "Nutrition for children with special needs",
     text: "Specialised child nutrition is at the heart of Dr. Sushma's work — she's delivered over 3,000 diet plans for children with ASD/Autism, ADHD, and developmental needs, through institutions like AIISH (Mysore) and early-intervention school programs. Certified in Autism & ADHD Nutrition Therapy (Cambridge International Institute, UK), she builds gentle, practical plans that work with a child's sensitivities, not against them.",
-    stat: { value: 8000, suffix: "+", label: "diet plans delivered for children with special needs" },
+        stat: { value: 5000, suffix: "+", label: "diet plans delivered for children with special needs" },
     credibility: "Certified in Autism & ADHD Nutrition Therapy, Level 1 & 2 — Cambridge International Institute, UK",
     ctaLabel: "Book a consultation for your child",
   },
@@ -490,7 +489,6 @@ const ABOUT = {
   ],
   stats: [
     { value: 19, suffix: "+", label: "Years Experience" },
-    { value: 15000, suffix: "+", label: "Programs Completed" },
     { value: 8000, suffix: "+", label: "Diet Plans Delivered" },
     { value: 3000, suffix: "+", label: "Plans for Special Kids" },
   ],

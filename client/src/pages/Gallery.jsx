@@ -217,7 +217,7 @@ export default function Gallery() {
                       </div>
 
                       {sectionDescription ? (
-                        <p className="-mt-3 mb-7 max-w-3xl text-[15px] leading-[1.8] text-muted">
+                        <p className="body -mt-3 mb-7 max-w-3xl text-muted">
                           {sectionDescription}
                         </p>
                       ) : null}
@@ -275,10 +275,10 @@ export default function Gallery() {
               <span className="mb-5 inline-flex items-center rounded-full border border-primary/30 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
                 Moments from GOLZ
               </span>
-              <h2 className="font-heading text-3xl font-semibold leading-tight tracking-tight text-ink sm:text-4xl">
+              <h2 className="h2 text-ink">
                 Moments from the GOLZ archive
               </h2>
-              <p className="mx-auto mt-5 max-w-[640px] text-base leading-[1.8] text-muted sm:text-lg">
+              <p className="body-lg mx-auto mt-5 max-w-[640px] text-muted">
                 From hands-on nutrition workshops and awareness talks to conferences, hospital visits and events &mdash; a
                 window into how science-backed nutrition comes alive.
               </p>
@@ -296,7 +296,7 @@ export default function Gallery() {
                     <span className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-sage text-primary">
                       <span className="font-heading text-lg font-bold">{String(i + 1).padStart(2, "0")}</span>
                     </span>
-                    <h3 className="mt-5 font-heading text-lg font-semibold text-ink">{point.title}</h3>
+                    <h3 className="card-title mt-5 text-ink">{point.title}</h3>
                     <p className="mt-2 text-sm leading-relaxed text-muted">{point.text}</p>
                   </div>
                 </Reveal>
@@ -319,10 +319,10 @@ export default function Gallery() {
 
         <div className="container-x relative z-10 text-center">
           <Reveal>
-            <h2 className="mx-auto max-w-2xl font-heading text-4xl font-semibold leading-tight text-[#EEF3EA] sm:text-5xl">
+            <h2 className="h2 mx-auto max-w-2xl text-[#EEF3EA]">
               Ready to Start Your Healthy Journey?
             </h2>
-            <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-[#DBE6D5]/80">
+            <p className="body-lg mx-auto mt-5 max-w-xl text-[#DBE6D5]/80">
               Personalized, science-backed nutrition plans &mdash; built around you, your body and your goals.
             </p>
 

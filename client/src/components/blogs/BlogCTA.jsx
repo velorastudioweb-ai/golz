@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 export default function BlogCTA() {
   return (
     <section className="rounded-[24px] bg-primary p-7 shadow-card">
-      <h2 className="font-heading text-xl font-semibold text-[#EEF3EA]">Ready for a change?</h2>
+      <h2 className="h3 text-[#EEF3EA]">Ready for a change?</h2>
       <p className="mt-2 text-sm leading-relaxed text-[#B6CCAF]">
         Get a personalised nutrition plan built around your goals, your routine and your body.
       </p>

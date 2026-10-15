@@ -18,6 +18,13 @@ console.log("ongoing durations left:", await db.collection("services").countDocu
 const about = await db.collection("settings").findOne({ key: "about" });
 console.log("award:", about.value.recognition[0]);
 console.log("speaking seeded:", !!about.value.speaking, "| affiliations seeded:", !!about.value.professionalAffiliations);
-const services = await db.collection("services").find({}).project({ slug: 1, emoji: 1 }).sort({ order: 1 }).toArray();
-console.log("emoji:", services.map((s) => `${s.slug}=${s.emoji || "-"}`).join(" | "));
-console.log('home stats:', JSON.stringify((await db.collection('settings').findOne({key:'homepage'})).value.stats));console.log('about stats:', JSON.stringify((await db.collection('settings').findOne({key:'about'})).value.stats));console.log('child stat:', JSON.stringify((await db.collection('settings').findOne({key:'about'})).value.specialNeeds.stat));await client.close();
+const services = await db.collection("services").find({}).project({ slug: 1, icon: 1, emoji: 1 }).sort({ order: 1 }).toArray();
+console.log("icons:", services.map((s) => `${s.slug}=${s.icon || "MISSING"}`).join(" | "));
+console.log("services without a usable icon:", services.filter((s) => !s.icon).length);
+const home = (await db.collection("settings").findOne({ key: "homepage" })).value.stats;
+const aboutStats = (await db.collection("settings").findOne({ key: "about" })).value.stats;
+console.log("home stats:", home.length, JSON.stringify(home));
+console.log("about stats:", aboutStats.length, JSON.stringify(aboutStats));
+console.log("about has Programs Completed:", aboutStats.some((s) => /Programs Completed/i.test(s.label)));
+console.log("child stat:", JSON.stringify((await db.collection("settings").findOne({ key: "about" })).value.specialNeeds.stat));
+await client.close();

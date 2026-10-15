@@ -201,11 +201,11 @@ function TestimonialsSection({ items = [] }) {
           <span className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-[#F0C75E]">
             <span className="h-1.5 w-1.5 rounded-full bg-[#D4AF37]" aria-hidden="true" /> Success Stories
           </span>
-          <h2 className="text-[38px] font-bold leading-[1.1] text-white sm:text-[48px] lg:text-[56px]">
+          <h2 className="h2 text-white">
             Real Transformations.{" "}
             <span className="bg-gradient-to-r from-[#E6C05A] to-[#D4AF37] bg-clip-text text-transparent">Real Results.</span>
           </h2>
-          <p className="mx-auto mt-6 max-w-[640px] text-lg leading-relaxed text-white/70 sm:text-xl">
+          <p className="lead mx-auto mt-6 max-w-[640px] text-white/70">
             Read inspiring journeys from our clients who transformed their health with personalized nutrition care.
           </p>
         </Reveal>
@@ -214,7 +214,7 @@ function TestimonialsSection({ items = [] }) {
           {TRUST_STATS.map((s, i) => (
             <Reveal key={s.label} delay={i * 0.1}>
               <div className="rounded-2xl border border-white/10 bg-white/[0.06] px-6 py-5 text-center backdrop-blur transition-all duration-300 sm:hover:-translate-y-1 sm:hover:border-[#D4AF37]/30">
-                <p className="font-heading text-3xl font-bold text-[#D4AF37]">
+                <p className="font-heading stat-value font-bold text-[#D4AF37]">
                   <Counter value={s.value} suffix={s.suffix} decimals={s.decimals} />
                 </p>
                 <p className="mt-1 text-sm font-medium text-white/70">{s.label}</p>

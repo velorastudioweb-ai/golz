@@ -8,7 +8,7 @@ export default function RelatedArticles({ posts = [] }) {
   return (
     <section className="bg-section-sage section-pad" aria-labelledby="related-articles-heading">
       <div className="container-x">
-        <h2 id="related-articles-heading" className="text-center font-heading text-3xl font-semibold text-ink sm:text-4xl">
+        <h2 id="related-articles-heading" className="h2 text-center text-ink">
           Related Articles
         </h2>
 

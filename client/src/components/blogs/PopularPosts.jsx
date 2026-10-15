@@ -19,7 +19,7 @@ export default function PopularPosts({ posts = [], tracked = false }) {
 
   return (
     <section className="card p-6" aria-labelledby="popular-posts-heading">
-      <h2 id="popular-posts-heading" className="flex items-center gap-2 font-heading text-lg font-semibold text-ink">
+      <h2 id="popular-posts-heading" className="h3 flex items-center gap-2 text-ink">
         <Icon size={18} className="text-primary" aria-hidden="true" />
         {heading}
       </h2>

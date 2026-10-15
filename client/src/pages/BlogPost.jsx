@@ -62,7 +62,7 @@ export default function BlogPost() {
         />
         <div className="container-x py-32 text-center sm:py-40">
           <p className="text-sm font-semibold uppercase tracking-wider text-limeDark">404</p>
-          <h1 className="mt-3 font-heading text-3xl font-semibold text-ink sm:text-4xl">Article not found</h1>
+          <h1 className="h2 mt-3 text-ink">Article not found</h1>
           <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-muted">
             The article you are looking for may have been moved or removed.
           </p>
@@ -127,7 +127,7 @@ export default function BlogPost() {
                 </Link>
               ) : null}
 
-              <h1 className="font-heading text-3xl font-semibold leading-[1.15] text-[#EEF3EA] sm:text-4xl lg:text-[46px]">
+              <h1 className="h1 text-[#EEF3EA]">
                 {blog.title}
               </h1>
 
@@ -179,7 +179,7 @@ export default function BlogPost() {
               <AuthorCard author={blog.author} />
 
               <div className="mt-14 rounded-[24px] bg-primary p-8 text-center shadow-card sm:p-10">
-                <h2 className="font-heading text-2xl font-semibold text-[#EEF3EA] sm:text-3xl">
+                <h2 className="h3 text-[#EEF3EA]">
                   Want a plan built around you?
                 </h2>
                 <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-[#B6CCAF] sm:text-base">
