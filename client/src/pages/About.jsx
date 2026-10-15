@@ -83,7 +83,7 @@ const FB = {
     heading: "Nutrition for children with special needs",
     text: "Specialised child nutrition is at the heart of Dr. Sushma's work — she's delivered over 3,000 diet plans for children with ASD/Autism, ADHD, and developmental needs, through institutions like AIISH (Mysore) and early-intervention school programs. Certified in Autism & ADHD Nutrition Therapy (Cambridge International Institute, UK), she builds gentle, practical plans that work with a child's sensitivities, not against them.",
     stat: {
-      value: 5000,
+      value: 3000,
       suffix: "+",
       label: "diet plans delivered for children with special needs",
     },

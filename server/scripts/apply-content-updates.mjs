@@ -64,7 +64,7 @@ async function main() {
           "value.bio": NEW_BIO,
           "value.stats": ABOUT_STATS,
           "value.helpGroups.1.items": ["Pregnancy, GDM & lactation", "ASD/Autism & ADHD child nutrition", "Nutrigenomics, Gutbiomics"],
-          "value.specialNeeds.stat.value": 5000,
+          "value.specialNeeds.stat.value": 3000,
           "value.specialNeeds.text":
             "Specialised child nutrition is at the heart of Dr. Sushma's work — she's delivered over 3,000 diet plans for children with ASD/Autism, ADHD, and developmental needs, through institutions like AIISH (Mysore) and early-intervention school programs. Certified in Autism & ADHD Nutrition Therapy (Cambridge International Institute, UK), she builds gentle, practical plans that work with a child's sensitivities, not against them.",
         },
@@ -234,7 +234,7 @@ async function main() {
   const homeStats = await db.collection("settings").updateOne({ key: "homepage" }, statStages);
   const aboutStats = await db
     .collection("settings")
-    .updateOne({ key: "about" }, [...statStages, { $set: { "value.specialNeeds.stat.value": 5000 } }]);
+    .updateOne({ key: "about" }, [...statStages, { $set: { "value.specialNeeds.stat.value": 3000 } }]);
   console.log(
     "diet-plan stats matched/modified:",
     homeStats.matchedCount, homeStats.modifiedCount,
