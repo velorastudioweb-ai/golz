@@ -31,6 +31,23 @@ function log(user, action, details) {
 
 const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+/**
+ * Cleans the optional per-event description map down to `{ eventTitle: text }`
+ * with trimmed non-empty values. Blank entries are dropped, which is how the
+ * admin removes a subsection description, and any non-object payload degrades
+ * to an empty map so a bad body can never break a save.
+ */
+export function cleanEventDescriptions(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const out = {};
+  for (const [key, desc] of Object.entries(value)) {
+    const name = String(key || "").trim();
+    const text = typeof desc === "string" ? desc.trim() : "";
+    if (name && text) out[name] = text;
+  }
+  return out;
+}
+
 async function sectionCounts() {
   const counts = await GalleryItem.aggregate([{ $group: { _id: "$category", n: { $sum: 1 } } }]);
   return Object.fromEntries(counts.map((c) => [c._id, c.n]));
@@ -60,6 +77,7 @@ router.post("/sections", async (req, res) => {
       name,
       title: String(req.body.title || "").trim() || name,
       description: String(req.body.description || "").trim(),
+      eventDescriptions: cleanEventDescriptions(req.body.eventDescriptions),
       cover: req.body.cover || "",
       order: (max?.order ?? 0) + 1,
       published: req.body.published !== false,
@@ -90,6 +108,7 @@ router.put("/sections/:id", async (req, res) => {
     }
     if ("title" in req.body) section.title = String(req.body.title || "").trim() || oldName;
     if ("description" in req.body) section.description = String(req.body.description || "").trim();
+    if ("eventDescriptions" in req.body) section.eventDescriptions = cleanEventDescriptions(req.body.eventDescriptions);
     if ("cover" in req.body) section.cover = req.body.cover || "";
     if ("published" in req.body) section.published = !!req.body.published;
     await section.save();

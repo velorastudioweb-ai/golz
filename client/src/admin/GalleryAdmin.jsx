@@ -10,7 +10,7 @@ import ImgFallback from "../components/ImgFallback";
 import { Modal, ConfirmDialog, Toast, Field, Toggle, EmptyState } from "./AdminUI";
 import { formatDate } from "../utils/helpers";
 
-const EMPTY_SECTION = { name: "", title: "", description: "", published: true };
+const EMPTY_SECTION = { name: "", title: "", description: "", eventDescriptions: {}, published: true };
 
 export default function GalleryAdmin() {
   const [items, setItems] = useState(null);
@@ -27,6 +27,7 @@ export default function GalleryAdmin() {
   const [uploadSection, setUploadSection] = useState("General");
   const [sectionModal, setSectionModal] = useState(null);
   const [deletingSection, setDeletingSection] = useState(null);
+  const [newEventTitle, setNewEventTitle] = useState("");
   const fileRef = useRef(null);
 
   const load = () =>
@@ -136,13 +137,32 @@ export default function GalleryAdmin() {
         await api.post("/admin/gallery/sections", sectionModal);
         showToast("Section added");
       }
-      setSectionModal(null);
+      closeSectionModal();
       loadSections();
       load();
     } catch (e) {
       showToast(e.response?.data?.message || "Save failed", "error");
     }
   };
+
+  const closeSectionModal = () => {
+    setSectionModal(null);
+    setNewEventTitle("");
+  };
+
+  /* Event titles that may carry their own blurb inside the section currently
+     being edited: every subsection found among this section's photos, plus any
+     title already present in the saved map so an existing description can be
+     edited or cleared even when its photos are not in the current list. */
+  const sectionEventNames = (() => {
+    if (!sectionModal) return [];
+    const names = new Set(Object.keys(sectionModal.eventDescriptions || {}));
+    for (const g of items || []) {
+      const event = String(g.eventName || "").trim();
+      if (event && String(g.category || "") === String(sectionModal.name || "")) names.add(event);
+    }
+    return [...names];
+  })();
 
   const chips = sections.length ? sections.map((s) => s.name) : [];
   const visible = (items || []).filter((g) => filter === "All" || g.category === filter);
@@ -218,7 +238,13 @@ export default function GalleryAdmin() {
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-charcoal">{s.title || s.name}</p>
-                  <p className="text-xs text-charcoal/45">{s.count} media {!s.published && "• hidden"}</p>
+                  <p className="text-xs text-charcoal/45">
+                    {s.count} media
+                    {Object.keys(s.eventDescriptions || {}).length > 0
+                      ? ` • ${Object.keys(s.eventDescriptions).length} event blurb${Object.keys(s.eventDescriptions).length > 1 ? "s" : ""}`
+                      : ""}
+                    {!s.published && " • hidden"}
+                  </p>
                 </div>
                 <div className="flex items-center gap-1">
                   <button onClick={() => moveSection(i, -1)} disabled={i === 0} className="rounded-lg bg-gray-100 p-1.5 text-charcoal/60 transition hover:bg-primary hover:text-white disabled:opacity-30" aria-label="Move up"><ChevronUp size={14} /></button>
@@ -226,7 +252,7 @@ export default function GalleryAdmin() {
                   <button onClick={() => toggleSection(s)} className="rounded-lg bg-gray-100 p-1.5 text-charcoal/60 transition hover:bg-primary hover:text-white" aria-label="Show/hide section">
                     {s.published ? <Eye size={14} /> : <EyeOff size={14} />}
                   </button>
-                  <button onClick={() => setSectionModal({ ...s })} className="rounded-lg bg-gray-100 p-1.5 text-charcoal/60 transition hover:bg-primary hover:text-white" aria-label="Edit section"><Pencil size={14} /></button>
+                  <button onClick={() => setSectionModal({ ...s, eventDescriptions: { ...(s.eventDescriptions || {}) } })} className="rounded-lg bg-gray-100 p-1.5 text-charcoal/60 transition hover:bg-primary hover:text-white" aria-label="Edit section"><Pencil size={14} /></button>
                   <button onClick={() => setDeletingSection(s)} className="rounded-lg bg-red-50 p-1.5 text-red-500 transition hover:bg-red-500 hover:text-white" aria-label="Delete section"><Trash2 size={14} /></button>
                 </div>
               </div>
@@ -346,7 +372,7 @@ export default function GalleryAdmin() {
       </Modal>
 
       {/* Section add/edit modal */}
-      <Modal open={!!sectionModal} onClose={() => setSectionModal(null)} title={sectionModal?._id ? "Edit section" : "Add section"}>
+      <Modal open={!!sectionModal} onClose={closeSectionModal} title={sectionModal?._id ? "Edit section" : "Add section"}>
         {sectionModal && (
           <div className="space-y-5">
             <Field label="Name *" hint="Matches the tag shown on each image">
@@ -355,14 +381,75 @@ export default function GalleryAdmin() {
             <Field label="Title shown on gallery page" hint="Leave empty to use the name">
               <input className="input" value={sectionModal.title} onChange={(e) => setSectionModal({ ...sectionModal, title: e.target.value })} placeholder={sectionModal.name || "e.g. Cooking Workshops"} />
             </Field>
-            <Field label="Description" hint="Shown under the title on the gallery page; leave blank to show nothing. To place text under an event, save this section with that exact event title as the name (e.g. 30 Mar 2024 Cancer Infertility, Roopanagar).">
+            <Field label="Description" hint="Intro shown under this section's title on the gallery page; leave blank to show nothing.">
               <textarea className="input resize-none" rows={3} value={sectionModal.description} onChange={(e) => setSectionModal({ ...sectionModal, description: e.target.value })} placeholder="Short intro for this section…" />
             </Field>
+
+            <div className="border-t border-gray-100 pt-4">
+              <p className="text-sm font-semibold text-charcoal">Subsection (event) descriptions</p>
+              <p className="mb-3 mt-1 text-xs text-charcoal/50">
+                Optional, one per event. Each description appears on the gallery page directly below its event title and above
+                its photo grid. Clear the text and save to remove one.
+              </p>
+              {sectionEventNames.length ? (
+                <div className="space-y-3">
+                  {sectionEventNames.map((event) => (
+                    <Field key={event} label={event}>
+                      <textarea
+                        className="input resize-none"
+                        rows={2}
+                        value={(sectionModal.eventDescriptions || {})[event] || ""}
+                        onChange={(e) =>
+                          setSectionModal({
+                            ...sectionModal,
+                            eventDescriptions: { ...(sectionModal.eventDescriptions || {}), [event]: e.target.value },
+                          })
+                        }
+                        placeholder="Leave blank to show nothing under this event…"
+                      />
+                    </Field>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-charcoal/45">
+                  No events in this section yet — each event title will appear here once its photos carry that event name.
+                </p>
+              )}
+              <div className="mt-3 flex gap-2">
+                <input
+                  className="input !py-2 !text-sm"
+                  value={newEventTitle}
+                  onChange={(e) => setNewEventTitle(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      document.getElementById("add-event-blurb")?.click();
+                    }
+                  }}
+                  placeholder="Event title not listed yet…"
+                  aria-label="Event title to describe"
+                />
+                <button
+                  id="add-event-blurb"
+                  type="button"
+                  onClick={() => {
+                    const title = newEventTitle.trim();
+                    if (!title) return;
+                    setSectionModal({ ...sectionModal, eventDescriptions: { ...(sectionModal.eventDescriptions || {}), [title]: "" } });
+                    setNewEventTitle("");
+                  }}
+                  className="btn-outline shrink-0 !px-4 !py-2 !text-sm"
+                >
+                  <Plus size={14} /> Add
+                </button>
+              </div>
+            </div>
+
             <label className="flex items-center gap-2.5 text-sm font-medium text-charcoal/75">
               <Toggle checked={sectionModal.published} onChange={(published) => setSectionModal({ ...sectionModal, published })} label="Visible on site" /> Visible on site
             </label>
             <div className="flex justify-end gap-2.5">
-              <button onClick={() => setSectionModal(null)} className="btn-outline !px-5 !py-2.5 !text-sm"><X size={15} /> Cancel</button>
+              <button onClick={closeSectionModal} className="btn-outline !px-5 !py-2.5 !text-sm"><X size={15} /> Cancel</button>
               <button onClick={saveSection} className="btn-primary !px-5 !py-2.5 !text-sm"><Save size={15} /> Save Section</button>
             </div>
           </div>

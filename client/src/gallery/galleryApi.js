@@ -205,6 +205,7 @@ export function deriveSections(items = [], apiSections = []) {
         name: s.name,
         title: s.title || s.name,
         description: s.description || "",
+        eventDescriptions: normalizeEventDescriptions(s.eventDescriptions),
         published: s.published !== false,
       }))
       .map((s) => [s.name, s])
@@ -223,6 +224,8 @@ export function deriveSections(items = [], apiSections = []) {
     title: labels.get(name)?.title || name,
     /* Optional blurb written in the CMS; empty means "show nothing". */
     description: labels.get(name)?.description || "",
+    /* Optional blurbs for the event subsections under this section. */
+    eventDescriptions: labels.get(name)?.eventDescriptions || {},
     published: labels.has(name) ? labels.get(name).published : true,
     count: counts.get(name) || 0,
   }));
@@ -255,6 +258,23 @@ function extractItems(payload) {
   return toGalleryItems(candidate);
 }
 
+/**
+ * The optional per-event (subsection) description map stored on a section.
+ * Anything that is not a usable `{ eventTitle: "text" }` object collapses to
+ * an empty map, so older API responses and the bundled snapshot keep working
+ * without the field ever existing there.
+ */
+export function normalizeEventDescriptions(raw) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+  const out = {};
+  for (const [key, value] of Object.entries(raw)) {
+    const name = text(key);
+    const desc = text(value);
+    if (name && desc) out[name] = desc;
+  }
+  return out;
+}
+
 function extractSections(payload) {
   const raw = Array.isArray(payload?.sections) ? payload.sections : Array.isArray(payload) ? payload : [];
   return raw
@@ -263,6 +283,7 @@ function extractSections(payload) {
       name: text(s.name),
       title: text(s.title) || text(s.name),
       description: text(s.description),
+      eventDescriptions: normalizeEventDescriptions(s.eventDescriptions),
       cover: text(s.cover),
       order: Number.isFinite(s.order) ? s.order : 999,
       published: s.published !== false,

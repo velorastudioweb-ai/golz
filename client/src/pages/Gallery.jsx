@@ -101,12 +101,23 @@ export default function Gallery() {
       });
   }, [filtered]);
 
+  /* Hero statistics come from the records this page renders — never from other
+     collections. Photographs counts unique published image URLs across the
+     complete gallery (videos excluded, a photo referenced twice counted once)
+     and ignores the active filters, so the figure describes the whole archive
+     rather than the current subset. */
   const stats = useMemo(() => {
     if (!items.length) return [];
+    const photographs = new Set();
+    for (const item of items) {
+      if (item.type === "video") continue;
+      const url = String(item.image || "").trim().split("#")[0].split("?")[0];
+      if (url) photographs.add(url);
+    }
     const years = new Set(items.map((i) => i.year).filter(Boolean));
     const events = new Set(items.map((i) => i.eventName).filter(Boolean));
     return [
-      { value: items.length, label: "Photographs" },
+      { value: photographs.size, label: "Photographs" },
       { value: events.size, label: "Events documented" },
       { value: years.size, label: "Years archived" },
       { value: visibleSections.length, label: "Collections" },
@@ -122,6 +133,25 @@ export default function Gallery() {
     (name) =>
       sections.find((s) => String(s.name || "").toLowerCase() === String(name || "").toLowerCase())?.description || "",
     [sections]
+  );
+
+  /* Subsection (event) blurb: the map lives on the parent year section, keyed
+     by the event title, so every subsection carries its own independent text.
+     A section row named exactly like the event still works as a fallback,
+     keeping descriptions written that way before the map existed on screen. */
+  const eventDescriptionFor = useCallback(
+    (sectionName, eventName) => {
+      const event = String(eventName || "").trim().toLowerCase();
+      if (!event) return "";
+      const parent = sections.find(
+        (s) => String(s.name || "").toLowerCase() === String(sectionName || "").toLowerCase()
+      );
+      const stored = parent?.eventDescriptions || {};
+      const key = Object.keys(stored).find((k) => String(k).trim().toLowerCase() === event);
+      const direct = key ? String(stored[key] || "").trim() : "";
+      return direct || descriptionFor(eventName);
+    },
+    [sections, descriptionFor]
   );
 
   /* A real photo from the archive, so the social card shows the actual gallery
@@ -223,7 +253,7 @@ export default function Gallery() {
                       ) : null}
 
                       {group.events.map((event) => {
-                        const eventDescription = descriptionFor(event.event);
+                        const eventDescription = eventDescriptionFor(group.section, event.event);
                         const showEventTitle = group.events.length > 1 || Boolean(eventDescription);
                         return (
                           <div key={event.event} className="mb-9 last:mb-0">
