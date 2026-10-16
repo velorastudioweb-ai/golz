@@ -309,8 +309,17 @@ export default function GalleryAdmin() {
       (!subsectionFilter || String(g.eventName || "").trim() === subsectionFilter)
   );
 
+  /* Counting rule — deliberately identical to the public gallery: an image
+     counts only when it is published, because that is all a visitor can ever
+     see. Unpublished records (older duplicate uploads) are still listed here
+     for management but reported separately, so the admin total and the website
+     total can never disagree. */
+  const liveCount = (items || []).filter((g) => g.published !== false).length;
+  const hiddenCount = (items || []).length - liveCount;
+
   /* Subsection directory: year -> subsection -> image count. Rendered in the
-     same order as the sections list so it mirrors the public gallery. */
+     same order as the sections list so it mirrors the public gallery, and
+     counted on the published-only rule above. */
   const sectionRank = new Map(sections.map((s, i) => [s.name, i]));
   const subsectionsByYear = (() => {
     const map = new Map();
@@ -319,12 +328,16 @@ export default function GalleryAdmin() {
       if (!map.has(year)) map.set(year, new Map());
       const subs = map.get(year);
       const name = String(g.eventName || "").trim() || "(no subsection)";
-      subs.set(name, (subs.get(name) || 0) + 1);
+      const cur = subs.get(name) || { live: 0, hidden: 0 };
+      if (g.published === false) cur.hidden += 1;
+      else cur.live += 1;
+      subs.set(name, cur);
     }
     return [...map.entries()]
       .sort((a, b) => (sectionRank.get(a[0]) ?? 999) - (sectionRank.get(b[0]) ?? 999))
       .map(([year, subs]) => [year, [...subs.entries()].sort((a, b) => a[0].localeCompare(b[0])),
-        [...subs.values()].reduce((n, c) => n + c, 0)]);
+        [...subs.values()].reduce((n, c) => n + c.live, 0),
+        [...subs.values()].reduce((n, c) => n + c.hidden, 0)]);
   })();
 
   /* Existing subsection names for the year currently selected in the upload
@@ -354,6 +367,14 @@ export default function GalleryAdmin() {
           ))}
         </div>
         <div className="flex items-center gap-3">
+          <span
+            className="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-charcoal/70"
+            title="Same counting rule as the website: published images only. Hidden records are unpublished duplicates kept for management."
+          >
+            <Eye size={13} className="mr-1 inline text-primary" />
+            {liveCount} live image{liveCount === 1 ? "" : "s"}
+            {hiddenCount > 0 && <span className="text-charcoal/40"> · {hiddenCount} hidden</span>}
+          </span>
           {selected.length > 0 && (
             <button onClick={() => setBulkDelete(true)} className="btn-primary !bg-red-500 !px-5 !py-2.5 !text-sm hover:!bg-red-600">
               <Trash2 size={15} /> Delete ({selected.length})
@@ -524,18 +545,21 @@ export default function GalleryAdmin() {
           <p className="text-sm text-charcoal/50">No images yet — upload some above to create subsections.</p>
         ) : (
           <div className="space-y-4">
-            {subsectionsByYear.map(([year, subs, total]) => (
+            {subsectionsByYear.map(([year, subs, total, hiddenTotal]) => (
               <div key={year} className="rounded-2xl border border-gray-100 bg-white p-3">
                 <div className="mb-2 flex flex-wrap items-center gap-2">
                   <span className="text-sm font-bold text-charcoal">{year}</span>
                   <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">{total} image{total === 1 ? "" : "s"}</span>
+                  {hiddenTotal > 0 && (
+                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-charcoal/50" title="Published-only counts (hidden duplicates excluded) match the website.">{hiddenTotal} hidden</span>
+                  )}
                 </div>
                 <div className="space-y-2">
-                  {subs.map(([name, count]) => (
+                  {subs.map(([name, c]) => (
                     <div key={name} className="flex flex-wrap items-center gap-3 rounded-xl border border-gray-100 bg-charcoal/[0.02] p-2.5">
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold text-charcoal">{name}</p>
-                        <p className="text-xs text-charcoal/45">{count} image{count === 1 ? "" : "s"}</p>
+                        <p className="text-xs text-charcoal/45">{c.live} image{c.live === 1 ? "" : "s"}{c.hidden ? ` · ${c.hidden} hidden` : ""}</p>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <button onClick={() => addImagesTo(year, name)} className="flex items-center gap-1 rounded-lg bg-primary/10 px-2.5 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary hover:text-white">
@@ -717,7 +741,10 @@ export default function GalleryAdmin() {
       )}
 
       {items && items.length > 0 && (
-        <p className="mt-4 text-center text-xs text-charcoal/40">Tip: drag tiles to reorder • {items.length} total items • Hover a tile for actions</p>
+        <p className="mt-4 text-center text-xs text-charcoal/40">
+          Tip: drag tiles to reorder • {liveCount} live image{liveCount === 1 ? "" : "s"} — same published-only count the website shows
+          {hiddenCount > 0 ? ` • ${hiddenCount} hidden duplicate${hiddenCount === 1 ? "" : "s"}` : ""} • Hover a tile for actions
+        </p>
       )}
 
       {/* Edit item modal */}

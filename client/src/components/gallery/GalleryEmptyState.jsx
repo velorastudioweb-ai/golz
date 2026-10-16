@@ -27,7 +27,7 @@ export default function GalleryEmptyState() {
         <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link to="/contact" className="btn-primary w-full sm:w-auto">
             <CalendarCheck size={18} aria-hidden="true" />
-            Book Consultation
+            Book a Consultation
           </Link>
           <Link to="/services" className="btn-outline w-full sm:w-auto">
             <Sparkles size={17} aria-hidden="true" />

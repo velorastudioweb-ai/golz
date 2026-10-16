@@ -84,7 +84,7 @@ export default function Header() {
 
           <div className="flex shrink-0 items-center gap-3">
             <Link to="/contact" className="btn-primary hidden !px-5 !py-2.5 !text-sm md:inline-flex">
-              <CalendarCheck size={17} /> Book Consultation
+              <CalendarCheck size={17} /> Book a Consultation
             </Link>
             <button
               onClick={() => setOpen((o) => !o)}
@@ -135,7 +135,7 @@ export default function Header() {
                 className="mt-auto pt-6"
               >
                 <Link to="/contact" className="btn-primary w-full">
-                  <CalendarCheck size={18} /> Book Consultation
+                  <CalendarCheck size={18} /> Book a Consultation
                 </Link>
                 <p className="mt-4 text-center text-xs text-muted">{site.general?.phone || "+91 934-267-4406"}</p>
               </motion.div>

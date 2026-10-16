@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  LayoutDashboard, Salad, Newspaper, Images, Star, MessageSquare, Settings,
+  LayoutDashboard, Salad, Newspaper, Images, Home, Star, MessageSquare, Settings,
   LogOut, Menu, X, Leaf, ExternalLink, FolderOpen,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
@@ -13,6 +13,7 @@ const NAV = [
   { to: "/admin/services", label: "Services", Icon: Salad },
   { to: "/admin/blogs", label: "Blogs", Icon: Newspaper },
   { to: "/admin/gallery", label: "Gallery", Icon: Images },
+  { to: "/admin/home-gallery", label: "Home Gallery", Icon: Home },
   { to: "/admin/media", label: "Media Library", Icon: FolderOpen },
   { to: "/admin/testimonials", label: "Testimonials", Icon: Star },
   { to: "/admin/messages", label: "Messages & Appointments", Icon: MessageSquare },

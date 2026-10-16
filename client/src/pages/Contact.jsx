@@ -55,11 +55,11 @@ export default function Contact() {
   return (
     <>
       <SEO
-        title="Book Consultation"
+        title="Book a Consultation"
         description="Book a consultation with Dr. Sushma Appaiah — pick a program, date and preferred slot. Online and in-clinic consultations in Mysuru."
         keywords="book consultation, nutritionist appointment, dietitian booking"
       />
-      <PageHero title="Book Consultation" subtitle="Pick a program and your preferred slot — we'll confirm your consultation shortly." breadcrumb={["Book Consultation"]} />
+      <PageHero title="Book a Consultation" subtitle="Pick a program and your preferred slot — we'll confirm your consultation shortly." breadcrumb={["Book a Consultation"]} />
 
       <section className="section-pad">
         <div className="container-x">

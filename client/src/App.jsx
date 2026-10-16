@@ -29,6 +29,7 @@ const ServicesAdmin = lazy(() => import("./admin/ServicesAdmin"));
 const BlogsAdmin = lazy(() => import("./admin/BlogsAdmin"));
 const BlogEditor = lazy(() => import("./admin/BlogEditor"));
 const GalleryAdmin = lazy(() => import("./admin/GalleryAdmin"));
+const HomeGalleryAdmin = lazy(() => import("./admin/HomeGalleryAdmin"));
 const MediaAdmin = lazy(() => import("./admin/MediaAdmin"));
 const TestimonialsAdmin = lazy(() => import("./admin/TestimonialsAdmin"));
 const MessagesAdmin = lazy(() => import("./admin/MessagesAdmin"));
@@ -78,6 +79,7 @@ export default function App() {
               <Route path="blogs/new" element={<BlogEditor />} />
               <Route path="blogs/:id" element={<BlogEditor />} />
               <Route path="gallery" element={<GalleryAdmin />} />
+              <Route path="home-gallery" element={<HomeGalleryAdmin />} />
               <Route path="media" element={<MediaAdmin />} />
               <Route path="testimonials" element={<TestimonialsAdmin />} />
               <Route path="messages" element={<MessagesAdmin />} />

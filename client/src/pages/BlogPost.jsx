@@ -187,7 +187,7 @@ export default function BlogPost() {
                   body.
                 </p>
                 <Link to="/contact" className="btn-lime mt-7 !px-7 !py-4 !text-base">
-                  Book Consultation
+                  Book a Consultation
                 </Link>
               </div>
             </div>

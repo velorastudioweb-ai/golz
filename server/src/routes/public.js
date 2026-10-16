@@ -5,6 +5,7 @@ import Blog from "../models/Blog.js";
 import GalleryItem from "../models/GalleryItem.js";
 import GallerySection from "../models/GallerySection.js";
 import GalleryTag from "../models/GalleryTag.js";
+import HomeGalleryItem from "../models/HomeGalleryItem.js";
 import Testimonial from "../models/Testimonial.js";
 import ContactMessage from "../models/ContactMessage.js";
 import Appointment from "../models/Appointment.js";
@@ -141,6 +142,15 @@ router.get("/gallery/tags", asyncHandler(async (_req, res) => {
 
 router.get("/gallery/categories", asyncHandler(async (_req, res) => {
   res.json(await GalleryItem.distinct("category", { published: true }));
+}));
+
+/**
+ * The homepage "Awards / Recognitions" and "Milestones" tiles. Published
+ * records only — the client falls back to its bundled twelve photos when this
+ * answers empty, so a fresh installation still shows a populated home page.
+ */
+router.get("/home-gallery", asyncHandler(async (_req, res) => {
+  res.json(await HomeGalleryItem.find({ published: true }).sort({ tab: 1, order: 1, createdAt: 1 }));
 }));
 
 /**

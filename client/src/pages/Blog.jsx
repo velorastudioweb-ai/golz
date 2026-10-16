@@ -232,7 +232,7 @@ export default function Blog() {
               around your goals, your routine and your body.
             </p>
             <Link to="/contact" className="btn-primary mt-8 !py-4 !text-base lg:!text-[18px]">
-              Book Consultation
+              Book a Consultation
             </Link>
           </div>
         </section>

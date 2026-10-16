@@ -34,7 +34,7 @@ export default function BlogGrid({ posts = [], hasFilters = false }) {
           We’re preparing practical nutrition, wellness and healthy lifestyle articles from GOLZ. Check back soon.
         </p>
         <Link to="/contact" className="btn-primary mt-8 !py-3.5 !text-base">
-          Book Consultation
+          Book a Consultation
         </Link>
       </div>
     );

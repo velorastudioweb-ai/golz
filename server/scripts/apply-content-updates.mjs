@@ -28,9 +28,9 @@ const HOMEPAGE_STATS = [
 
 /* Exactly three metrics on About, same widths as the rest of the site. */
 const ABOUT_STATS = [
-  { value: 19, suffix: "+", label: "Years Experience" },
-  { value: 8000, suffix: "+", label: "Diet Plans Delivered" },
-  { value: 3000, suffix: "+", label: "Plans for Special Kids" },
+  { value: 19, suffix: "+", label: "Years of changing lives with nutrition and wellness programs" },
+  { value: 8000, suffix: "+", label: "Personalized diet plans delivered" },
+  { value: 3000, suffix: "+", label: "Specialized diet plans for children" },
 ];
 
 const SOCIALS = {

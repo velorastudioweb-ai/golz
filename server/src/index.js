@@ -24,6 +24,7 @@ import adminMessageRoutes from "./routes/admin/messages.js";
 import adminSettingRoutes from "./routes/admin/settings.js";
 import adminDashboardRoutes from "./routes/admin/dashboard.js";
 import adminMediaRoutes from "./routes/admin/media.js";
+import adminHomeGalleryRoutes from "./routes/admin/homeGallery.js";
 import Blog from "./models/Blog.js";
 import Service from "./models/Service.js";
 import Setting from "./models/Setting.js";
@@ -64,6 +65,7 @@ app.use("/api/admin/testimonials", ...adminGuard, fileUpload, adminTestimonialRo
 app.use("/api/admin/messages", ...adminGuard, adminMessageRoutes);
 app.use("/api/admin/settings", ...adminGuard, adminSettingRoutes);
 app.use("/api/admin/media", ...adminGuard, fileUpload, adminMediaRoutes);
+app.use("/api/admin/home-gallery", ...adminGuard, fileUpload, adminHomeGalleryRoutes);
 
 // Generic file upload (used by admin editors for covers, avatars, inline images)
 app.post("/api/admin/upload", ...adminGuard, upload.single("file"), async (req, res) => {
@@ -129,8 +131,22 @@ if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
 // ---------- Production static hosting ----------
 const clientDist = path.join(__dirname, "..", "..", "client", "dist");
 if (fs.existsSync(clientDist)) {
-  app.use(express.static(clientDist, { maxAge: "1h", index: false }));
-  app.get(/^\/(?!api|uploads).*/, (_req, res) => res.sendFile(path.join(clientDist, "index.html")));
+  /* Hashed build assets may be cached for an hour, but index.html must always
+     revalidate — a cached shell is what makes an already-deployed change look
+     like it "reverts" for about an hour before the old copy reappears. */
+  app.use(
+    express.static(clientDist, {
+      maxAge: "1h",
+      index: false,
+      setHeaders: (res, filePath) => {
+        if (filePath.endsWith("index.html")) res.setHeader("Cache-Control", "no-cache");
+      },
+    })
+  );
+  app.get(/^\/(?!api|uploads).*/, (_req, res) => {
+    res.setHeader("Cache-Control", "no-cache");
+    res.sendFile(path.join(clientDist, "index.html"));
+  });
 }
 
 app.get("/api/health", (_req, res) => res.json({ ok: true, time: new Date().toISOString() }));

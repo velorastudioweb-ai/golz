@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { CalendarCheck, MessageCircle } from "lucide-react";
@@ -311,45 +311,6 @@ export default function Gallery() {
         </div>
       </section>
 
-      {/* ============ MOMENTS FROM GOLZ ============ */}
-      {!isEmpty ? (
-        <section className="bg-section-sage section-pad">
-          <div className="container-x">
-            <Reveal className="mx-auto max-w-3xl text-center">
-              <span className="mb-5 inline-flex items-center rounded-full border border-primary/30 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
-                Moments from GOLZ
-              </span>
-              <h2 className="h2 text-ink">
-                Moments from the GOLZ archive
-              </h2>
-              <p className="body-lg mx-auto mt-5 max-w-[640px] text-muted">
-                From hands-on nutrition workshops and awareness talks to conferences, hospital visits and events &mdash; a
-                window into how science-backed nutrition comes alive.
-              </p>
-            </Reveal>
-
-            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-              {[
-                { title: "Evidence first", text: "Every plan starts with labs, history and medication &mdash; not guesswork." },
-                { title: "Real people", text: "Plans shaped around your work, family, culture and what you actually enjoy eating." },
-                { title: "Built to last", text: "Sustainable habits, not crash diets. Progress you can keep after the plan ends." },
-                { title: "One nutritionist", text: "The same person follows you through, adjusting as your body responds." },
-              ].map((point, i) => (
-                <Reveal key={point.title} delay={i * 0.07}>
-                  <div className="h-full rounded-[22px] border border-line bg-white p-7 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift motion-reduce:transform-none">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-sage text-primary">
-                      <span className="font-heading text-lg font-bold">{String(i + 1).padStart(2, "0")}</span>
-                    </span>
-                    <h3 className="card-title mt-5 text-ink">{point.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted">{point.text}</p>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : null}
-
       {/* ============ CTA ============ */}
       <section className="relative overflow-hidden bg-primary section-pad">
         <div
@@ -373,7 +334,7 @@ export default function Gallery() {
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link to="/contact" className="btn-lime w-full transition-transform duration-300 ease-out hover:scale-[1.02] sm:w-auto">
                 <CalendarCheck size={18} aria-hidden="true" />
-                Book Consultation
+                Book a Consultation
               </Link>
               <Link
                 to="/contact"

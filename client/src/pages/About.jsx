@@ -133,9 +133,9 @@ const FB = {
     "To make evidence-based nutrition simple, accessible and enjoyable — so every client can achieve lasting health without deprivation or fad diets.",
   vision: "A world where personalized nutrition is the first line of defence against lifestyle disease, not the last resort.",
   stats: [
-    { value: 19, suffix: "+", label: "Years Experience" },
-    { value: 8000, suffix: "+", label: "Diet Plans Delivered" },
-    { value: 3000, suffix: "+", label: "Plans for Special Kids" },
+    { value: 19, suffix: "+", label: "Years of changing lives with nutrition and wellness programs" },
+    { value: 8000, suffix: "+", label: "Personalized diet plans delivered" },
+    { value: 3000, suffix: "+", label: "Specialized diet plans for children" },
   ],
 };
 

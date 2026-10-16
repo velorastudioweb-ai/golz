@@ -14,6 +14,7 @@ import Lightbox, { PlayBadge } from "../components/Lightbox";
 import { FALLBACK_SERVICES, loadServices } from "../services/servicesApi";
 import ServiceIcon from "../components/ServiceIcon";
 import TestimonialsSection from "../components/TestimonialsSection";
+import api from "../api/client";
 
 const FALLBACK_STATS = [
   { value: 19, suffix: "+", label: "Years of changing lives with nutrition and wellness programs" },
@@ -103,10 +104,11 @@ const FOUNDER_BIO = [
   "HER AREAS OF EXPERTISE INCLUDE REVERSING DIABETES, PCOD (RECENTLY TERMED AS PMOS), THYROID DISORDERS, PREGNANCY NUTRITION, SPORTS NUTRITION, ASD/ AUTISM AND SPECIAL CHILDREN NUTRITION, NUTRIGENOMICS, GUTBIOMICS, EMPOWERING INDIVIDUALS AND FAMILIES TO BUILD HEALTHIER LIVES THROUGH PERSONALIZED NUTRITION.",
 ].join("\n\n");
 
-/* Client photos from the home gallery stand in for the hero social-proof
-   stack, so the row shows real people instead of placeholder glyphs. */
+/* Indian client portraits for the hero social-proof stack (CC0 portraits in
+   client/public/home-gallery/faces), so the row shows real faces beside the
+   rating instead of gallery crops. */
 const PATIENT_PHOTOS = [1, 2, 3, 4, 5].map((n) => ({
-  src: `/home-gallery/home-${String(n).padStart(2, "0")}.jpg`,
+  src: `/home-gallery/faces/face-${n}.jpg`,
   alt: `GOLZ client ${n}`,
 }));
 
@@ -210,10 +212,48 @@ export default function Home() {
     };
   }, []);
 
-  /* The home preview shows only the client's own home-gallery photos; the full
-     archive lives behind "View Gallery". */
+  /* The home preview shows only the home-gallery photos; the full archive
+     lives behind "View Gallery". Records managed in the admin (image, caption,
+     tab) are the source of truth as soon as any exist; the bundled twelve
+     photos stay as the fallback for a fresh install or an offline API. */
   const [galleryTab, setGalleryTab] = useState(GALLERY_TABS[0].id);
-  const homeGallery = LOCAL_HOME_GALLERY.filter((g) =>
+  const [homeRecords, setHomeRecords] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    api
+      .get("/public/home-gallery")
+      .then(({ data }) => {
+        if (alive) setHomeRecords(Array.isArray(data) ? data : []);
+      })
+      .catch(() => {
+        if (alive) setHomeRecords([]);
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const gallerySource = homeRecords?.length
+    ? homeRecords.map((r) => ({
+        id: r._id,
+        image: r.image,
+        thumb: r.thumb || r.image,
+        type: "image",
+        section: "Home Gallery",
+        sectionId: "",
+        year: "",
+        eventName: r.caption || "Our journey - Precious moments",
+        caption: r.caption || "",
+        /* The caption doubles as the event name, so the lightbox shows it once. */
+        hasOwnCaption: false,
+        alt: r.caption || "GOLZ nutrition — precious moment",
+        order: r.order,
+        origin: "home",
+        award: r.tab === "award",
+      }))
+    : LOCAL_HOME_GALLERY;
+
+  const homeGallery = gallerySource.filter((g) =>
     galleryTab === "awards" ? g.award : !g.award
   );
   /* The lightbox walks whichever tab is on screen, so next/previous follow the grid. */
@@ -320,7 +360,7 @@ export default function Home() {
                   <p className="font-heading stat-value font-bold text-primary">
                     <CountUp value={Number(s.value)} suffix={s.suffix} />
                   </p>
-                  <p className="mx-auto mt-2.5 max-w-[200px] text-sm font-medium leading-snug text-muted">{s.label}</p>
+                  <p className="mx-auto mt-2.5 max-w-[200px] text-lg font-medium leading-snug text-muted">{s.label}</p>
                 </div>
               </Reveal>
             ))}
@@ -376,7 +416,7 @@ export default function Home() {
                 to="/contact"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/25 px-8 py-3.5 text-sm font-bold text-[#EEF3EA] transition-all duration-300 hover:border-lime hover:text-lime sm:w-auto sm:min-w-[200px]"
               >
-                Book Consultation <ArrowUpRight size={18} />
+                Book a Consultation <ArrowUpRight size={18} />
               </Link>
             </div>
           </Reveal>

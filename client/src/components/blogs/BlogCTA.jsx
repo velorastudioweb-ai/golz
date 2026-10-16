@@ -10,7 +10,7 @@ export default function BlogCTA() {
         Get a personalised nutrition plan built around your goals, your routine and your body.
       </p>
       <Link to="/contact" className="btn-lime mt-6 w-full !px-4 !py-3.5 !text-base">
-        Book Consultation
+        Book a Consultation
         <ArrowRight size={17} aria-hidden="true" />
       </Link>
     </section>

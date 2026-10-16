@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
  * Dark-green editorial hero for the blog listing.
  *
  * The copy lives here as the default so the page cannot ship without it, and
- * the primary action is the same "Book Consultation" call used across the site
+ * the primary action is the same "Book a Consultation" call used across the site
  * rather than a second, competing one.
  */
 export default function BlogHero({
@@ -48,7 +48,7 @@ export default function BlogHero({
           >
             <Link to="/contact" className="btn-lime w-full !px-7 !py-4 text-base sm:w-auto lg:text-[18px]">
               <CalendarHeart size={18} aria-hidden="true" />
-              Book Consultation
+              Book a Consultation
             </Link>
           </motion.div>
         </div>

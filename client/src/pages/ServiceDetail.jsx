@@ -165,7 +165,7 @@ export default function ServiceDetail() {
                 <p className="flex items-center gap-3"><Wallet size={17} className="shrink-0 text-primary" /> Flexible payment options</p>
               </div>
               <Link to={`/contact?service=${encodeURIComponent(service.title)}`} className="btn-primary w-full">
-                <CalendarCheck size={18} /> Book Consultation
+                <CalendarCheck size={18} /> Book a Consultation
               </Link>
               <p className="mt-5 text-center text-xs text-muted">Free 10-minute discovery call before you commit.</p>
             </div>

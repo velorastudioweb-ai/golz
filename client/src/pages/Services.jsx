@@ -15,13 +15,6 @@ const CATEGORIES = [
   { id: "performance", no: "4", title: "Performance & Precision", blurb: "Sports nutrition and DNA-based precision plans." },
 ];
 
-const STEPS = [
-  { title: "Consultation", text: "We start by understanding you: your health history, condition, lifestyle, food habits and goals." },
-  { title: "Assessment", text: "We review your labs, body composition and — where relevant — your DNA and gut-microbiome data, so the plan is built on evidence, not guesswork." },
-  { title: "Your personalised plan", text: "You get a plan designed around your body and your everyday food — not a generic chart." },
-  { title: "Monitoring & adjustment", text: "We track your progress and refine the plan as your body responds, so it keeps working over time." },
-];
-
 const SEO_TITLE = "Services | GOLZ \u2013 Giggles of Livez";
 const SEO_DESCRIPTION =
   "Nutrition & care for every stage of life — weight, diabetes, thyroid & PCOS, pregnancy, children's health, special needs, oncology, sports and precision nutrition. Personalised plans built around you.";
@@ -256,52 +249,6 @@ export default function Services() {
         </section>
       )}
 
-      {ordered.some((s) => s.credibility) && (
-        <section className="bg-section-sage py-10">
-          <div className="container-x flex flex-wrap items-start justify-center gap-x-10 gap-y-4">
-            {ordered
-              .filter((s) => s.credibility)
-              .map((s) => (
-                <p
-                  key={s._id}
-                  className="flex items-start gap-2.5 rounded-full border border-lime/40 bg-white/80 px-6 py-3 text-sm font-medium text-ink"
-                >
-                  <BadgeCheck size={17} className="mt-0.5 shrink-0 text-limeDark" /> {s.credibility}
-                </p>
-              ))}
-          </div>
-        </section>
-      )}
-
-      {/* ================= HOW IT WORKS ================= */}
-      <section className="bg-primary section-pad">
-        <div className="container-x">
-          <SectionHeading
-            light
-            eyebrow="How It Works"
-            title="One Method, Personalised For Every Condition"
-            subtitle="Every plan above, however different the condition, follows the same personalised method."
-          />
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {STEPS.map((step, i) => (
-              <Reveal key={step.title} delay={i * 0.1}>
-                <div className="h-full rounded-[18px] border border-white/15 bg-white/5 p-7 transition hover:bg-white/10">
-                  <span className="mb-5 flex h-11 w-11 items-center justify-center rounded-full bg-lime font-heading text-lg font-semibold text-ink">
-                    {i + 1}
-                  </span>
-                  <h3 className="card-title mb-2 text-[#EEF3EA]">{step.title}</h3>
-                  <p className="text-sm leading-relaxed text-[#A9C0A0]">{step.text}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-          <Reveal className="mt-12 text-center">
-            <Link to="/contact" className="btn-gold !bg-lime !text-ink hover:!bg-limeDark">
-              <CalendarCheck size={19} /> Book your consultation
-            </Link>
-          </Reveal>
-        </div>
-      </section>
-    </>
+      </>
   );
 }
