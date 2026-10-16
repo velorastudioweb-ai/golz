@@ -38,11 +38,16 @@ export default function ServicesAdmin() {
   const save = async (payload) => {
     setSaving(true);
     try {
+      // Normalise image to string – some DB records store null/undefined.
+      const safePayload = {
+        ...payload,
+        image: payload.image != null ? String(payload.image) : "",
+      };
       if (isNew) {
-        await api.post("/admin/services", payload);
+        await api.post("/admin/services", safePayload);
         showToast("Service created");
       } else {
-        await api.put(`/admin/services/${editing._id}`, payload);
+        await api.put(`/admin/services/${editing._id}`, safePayload);
         showToast("Service updated");
       }
       setEditing(null);
@@ -179,7 +184,16 @@ export default function ServicesAdmin() {
                 <input type="number" min="0" className="input" value={editing.price ?? ""} onChange={(e) => setEditing({ ...editing, price: e.target.value === "" ? null : Number(e.target.value) })} />
               </Field>
               <Field label="Service image">
-                <UploadInput value={editing.image} onChange={(url) => setEditing({ ...editing, image: url })} />
+                <div className="relative">
+                  <UploadInput value={editing.image} onChange={(url) => setEditing({ ...editing, image: url })} />
+                  {editing.image && (
+                    <button type="button"
+                      onClick={() => setEditing({ ...editing, image: "" })}
+                      className="absolute top-1 right-1 text-sm text-red-500 hover:text-red-700 opacity-0 transition opacity-100 group-hover:opacity-100">
+                      ×
+                    </button>
+                  )}
+                </div>
               </Field>
             </div>
             <Field label="What your plan covers">
