@@ -41,6 +41,13 @@ export default {
         display: ["Poppins", "sans-serif"],
         body: ["Inter", "sans-serif"],
       },
+      fontSize: {
+        /* Standard body size is 16px everywhere. Re-pointing the Tailwind
+           `sm` tier (used for nav, descriptions, labels, footer and admin
+           tables) to 1rem resolves all of those areas to 16px at the source;
+           `text-xs` remains the compact badge/metadata tier. */
+        sm: ["1rem", { lineHeight: "1.6" }],
+      },
       boxShadow: {
         soft: "0 10px 30px -12px rgba(20, 35, 27, 0.25)",
         card: "0 22px 40px -28px rgba(20, 35, 27, 0.45)",

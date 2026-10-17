@@ -44,7 +44,7 @@ function ContactRow({ icon: Icon, label, href, children }) {
   const content = (
     <>
       <p className="text-xs font-semibold uppercase tracking-wider text-muted">{label}</p>
-      <p className="truncate text-[15px] font-medium text-ink">{children}</p>
+      <p className="truncate font-medium text-ink">{children}</p>
     </>
   );
   return (
@@ -112,7 +112,7 @@ function BookingSection() {
                   <Clock3 size={20} className="shrink-0 text-primary" />
                   <h3 className="h3 text-ink">Consultation Hours</h3>
                 </div>
-                <div className="mt-5 space-y-5 text-[15px]">
+                <div className="mt-5 space-y-5">
                   <div>
                     <p className="font-semibold text-ink">Monday – Saturday</p>
                     <div className="mt-2 grid grid-cols-[minmax(0,90px)_1fr] gap-x-4 gap-y-1.5 text-muted">

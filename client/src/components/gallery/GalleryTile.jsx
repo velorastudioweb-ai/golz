@@ -83,7 +83,7 @@ export default function GalleryTile({ item, index, onOpen }) {
               {item.year}
             </span>
           ) : null}
-          <span className="block font-heading text-[15px] font-semibold leading-snug text-white line-clamp-2 sm:text-base">
+                <span className="block font-heading font-semibold leading-snug text-white line-clamp-2 sm:text-base">
             {heading}
           </span>
           {caption ? (

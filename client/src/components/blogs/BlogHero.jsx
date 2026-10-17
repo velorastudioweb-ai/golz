@@ -46,7 +46,7 @@ export default function BlogHero({
             transition={{ duration: 0.6, delay: 0.12, ease: [0.21, 0.65, 0.36, 1] }}
             className="lg:pb-2"
           >
-            <Link to="/contact" className="btn-lime w-full !px-7 !py-4 text-base sm:w-auto lg:text-[18px]">
+                        <Link to="/contact" className="btn-lime w-full !px-7 !py-4 sm:w-auto">
               <CalendarHeart size={18} aria-hidden="true" />
               Book a Consultation
             </Link>

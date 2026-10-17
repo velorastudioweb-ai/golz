@@ -79,7 +79,7 @@ export default function BlogFeatured({ blog }) {
           </div>
 
           {blog.excerpt ? (
-            <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-muted sm:text-[15px]">
+                    <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-muted">
               {blog.excerpt}
             </p>
           ) : null}

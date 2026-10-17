@@ -231,7 +231,7 @@ export default function Blog() {
               Every article here is written to be useful on its own. A consultation takes it further with a plan built
               around your goals, your routine and your body.
             </p>
-            <Link to="/contact" className="btn-primary mt-8 !py-4 !text-base lg:!text-[18px]">
+            <Link to="/contact" className="btn-primary mt-8 !py-4">
               Book a Consultation
             </Link>
           </div>

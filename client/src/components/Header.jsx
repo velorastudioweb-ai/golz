@@ -72,7 +72,7 @@ export default function Header() {
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) =>
-                  `rounded-full px-4 py-2 font-body text-[14.5px] font-medium transition ${
+                  `rounded-full px-4 py-2 font-body font-medium transition ${
                     isActive ? "bg-primary/10 text-primary" : "text-ink/75 hover:bg-primary/5 hover:text-primary"
                   }`
                 }
@@ -83,7 +83,7 @@ export default function Header() {
           </nav>
 
           <div className="flex shrink-0 items-center gap-3">
-            <Link to="/contact" className="btn-primary hidden !px-5 !py-2.5 !text-sm md:inline-flex">
+            <Link to="/contact" className="btn-primary hidden !px-5 !py-2.5 md:inline-flex">
               <CalendarCheck size={17} /> Book a Consultation
             </Link>
             <button

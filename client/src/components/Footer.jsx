@@ -11,7 +11,7 @@ const SOCIAL_ICONS = { facebook: Facebook, instagram: Instagram, youtube: Youtub
 /* Published clinic profiles, so the footer never ships without social links
    even when the settings payload is missing or the fields are still empty. */
 const FALLBACK_SOCIALS = {
-  facebook: "https://www.facebook.com/company/golzmysuru",
+  facebook: "https://www.facebook.com/share/18EbtyMX9g/?mibextid=wwXIfr",
   instagram: "https://www.instagram.com/golzmysuru/",
   twitter: "https://x.com/GolzMysuru",
 };

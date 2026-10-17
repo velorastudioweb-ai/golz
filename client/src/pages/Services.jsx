@@ -175,7 +175,7 @@ export default function Services() {
             <a
               key={cat.id}
               href={`#${cat.id}`}
-              className="whitespace-nowrap rounded-full px-4 py-2 font-body text-[14.5px] font-medium text-ink/70 transition hover:bg-primary/5 hover:text-primary"
+              className="whitespace-nowrap rounded-full px-4 py-2 font-body font-medium text-ink/70 transition hover:bg-primary/5 hover:text-primary"
             >
               <span className="mr-1.5 text-xs font-semibold text-limeDark">{cat.no}</span>
               {cat.title}
@@ -184,7 +184,7 @@ export default function Services() {
           {orphans.length > 0 && (
             <a
               href="#more-services"
-              className="whitespace-nowrap rounded-full px-4 py-2 font-body text-[14.5px] font-medium text-ink/70 transition hover:bg-primary/5 hover:text-primary"
+              className="whitespace-nowrap rounded-full px-4 py-2 font-body font-medium text-ink/70 transition hover:bg-primary/5 hover:text-primary"
             >
               <span className="mr-1.5 text-xs font-semibold text-limeDark">+</span>
               All Services

@@ -15,17 +15,29 @@
   --muted: #5a6b60;
   --line: rgba(20, 35, 27, 0.12);
   --white: #ffffff;
+  --site-base-font-size: 16px;
 }
 
 html {
   scroll-behavior: smooth;
   overflow-x: clip;
+  font-size: var(--site-base-font-size);
 }
 
 body {
   @apply font-body text-ink bg-paper antialiased;
+  font-size: var(--site-base-font-size);
+  line-height: 1.6;
   overflow-x: clip;
   text-rendering: optimizeLegibility;
+}
+
+/* Form controls follow the body size instead of browser defaults. */
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -89,17 +101,17 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .body {
-    font-size: 1.125rem; /* 18px — main content size on every page */
+    font-size: 1rem; /* 16px — standard body size on every page */
     line-height: 1.7;
   }
 
   .body-lg {
-    font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem); /* 16px → 18px */
+    font-size: 1rem; /* 16px — section descriptions and empty states */
     line-height: 1.75;
   }
 
   .lead {
-    font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem); /* 17px → 20px */
+    font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem); /* 17px → 20px — hero/promo tier only */
     line-height: 1.7;
   }
 
@@ -118,23 +130,23 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-[16px] bg-primary px-7 py-4 font-body text-base font-semibold text-white shadow-soft transition-all duration-200 hover:bg-primary-dark hover:shadow-lift hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/30 lg:text-[18px];
+    @apply inline-flex items-center justify-center gap-2 rounded-[16px] bg-primary px-7 py-4 font-body text-base font-semibold text-white shadow-soft transition-all duration-200 hover:bg-primary-dark hover:shadow-lift hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/30;
   }
 
   .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 rounded-[16px] border border-line bg-transparent px-7 py-4 font-body text-base font-semibold text-ink backdrop-blur transition-all duration-200 hover:border-primary hover:text-primary focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/25 lg:text-[18px];
+    @apply inline-flex items-center justify-center gap-2 rounded-[16px] border border-line bg-transparent px-7 py-4 font-body text-base font-semibold text-ink backdrop-blur transition-all duration-200 hover:border-primary hover:text-primary focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/25;
   }
 
   .btn-gold {
-    @apply inline-flex items-center justify-center gap-2 rounded-[16px] bg-honey px-7 py-4 font-body text-base font-semibold text-white shadow-soft transition-all duration-200 hover:brightness-105 hover:-translate-y-0.5 lg:text-[18px];
+    @apply inline-flex items-center justify-center gap-2 rounded-[16px] bg-honey px-7 py-4 font-body text-base font-semibold text-white shadow-soft transition-all duration-200 hover:brightness-105 hover:-translate-y-0.5;
   }
 
   .btn-lime {
-    @apply inline-flex items-center justify-center gap-2 rounded-[16px] bg-lime px-7 py-4 font-body text-base font-semibold text-ink shadow-soft transition-all duration-200 hover:bg-limeDark hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-lime/30 lg:text-[18px];
+    @apply inline-flex items-center justify-center gap-2 rounded-[16px] bg-lime px-7 py-4 font-body text-base font-semibold text-ink shadow-soft transition-all duration-200 hover:bg-limeDark hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-lime/30;
   }
 
   .btn-terracotta {
-    @apply inline-flex items-center justify-center gap-2 rounded-[16px] bg-terracotta px-7 py-4 font-body text-base font-semibold text-white transition-all duration-200 hover:bg-terracotta-dark hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-terracotta/30 lg:text-[18px];
+    @apply inline-flex items-center justify-center gap-2 rounded-[16px] bg-terracotta px-7 py-4 font-body text-base font-semibold text-white transition-all duration-200 hover:bg-terracotta-dark hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-terracotta/30;
     box-shadow: 0 14px 28px -14px rgba(201, 120, 88, 0.55);
   }
   .btn-terracotta:hover { box-shadow: 0 18px 34px -16px rgba(201, 120, 88, 0.65); }
@@ -163,7 +175,7 @@ h1, h2, h3, h4, h5, h6 {
   }
   .chip-active { @apply bg-primary text-white border-primary; }
 
-  .rich-text { @apply text-[1.05rem] leading-relaxed text-ink/85; }
+  .rich-text { @apply text-base leading-relaxed text-ink/85; }
   .rich-text h2 { @apply mt-8 mb-3 text-2xl font-bold text-ink; }
   .rich-text h3 { @apply mt-6 mb-2 text-xl font-semibold text-ink; }
   .rich-text p { @apply my-3; }

@@ -34,7 +34,7 @@ const ABOUT_STATS = [
 ];
 
 const SOCIALS = {
-  facebook: "https://www.facebook.com/company/golzmysuru",
+  facebook: "https://www.facebook.com/share/18EbtyMX9g/?mibextid=wwXIfr",
   instagram: "https://www.instagram.com/golzmysuru/",
   youtube: "",
   twitter: "https://x.com/GolzMysuru",

@@ -338,7 +338,7 @@ export default function Gallery() {
               </Link>
               <Link
                 to="/contact"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/25 bg-white/5 px-7 py-3.5 font-body text-[15px] font-semibold text-[#EEF3EA] backdrop-blur transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-lime hover:text-lime sm:w-auto"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/25 bg-white/5 px-7 py-3.5 font-body font-semibold text-[#EEF3EA] backdrop-blur transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-lime hover:text-lime sm:w-auto"
               >
                 <MessageCircle size={18} aria-hidden="true" />
                 Contact Us
