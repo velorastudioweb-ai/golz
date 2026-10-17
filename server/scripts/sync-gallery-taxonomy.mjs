@@ -72,7 +72,7 @@ const LEGACY_ARCHIVE_PATH = /\/gallery\/archive\//i;
 
 const summary = { tagsCreated: [], sectionsCreated: [], itemsImported: 0, legacyUnpublished: 0 };
 
-await mongoose.connect(process.env.MONGO_URI);
+await mongoose.connect(process.env.MONGO_DIRECT_URI || process.env.MONGO_URI);
 
 /* ---------- 1. Tags ---------- */
 for (let i = 0; i < DEFAULT_TAGS.length; i++) {

@@ -12,6 +12,12 @@ const manifest = JSON.parse(fs.readFileSync(path.join(REPO, "client/src/data/gal
 const images = manifest.images;
 
 const IMAGE_EXT = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif", ".gif"]);
+
+/* The gallery archive is `public/<year>/…` only; sibling folders such as
+   `home-gallery` and loose root assets are other features' source material. */
+const GALLERY_SECTION = /^\d{4}/;
+const isGallerySource = (file) => GALLERY_SECTION.test(path.relative(SRC, file).split(path.sep)[0]);
+
 const walk = (dir) => {
   const out = [];
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -35,7 +41,7 @@ const walkAll = (dir) => {
   return out;
 };
 
-const onDisk = walk(SRC).map((f) => path.relative(SRC, f).split(path.sep).join("/"));
+const onDisk = walk(SRC).filter(isGallerySource).map((f) => path.relative(SRC, f).split(path.sep).join("/"));
 const indexed = new Set(images.map((i) => i.source));
 
 const supported = onDisk.filter((p) => IMAGE_EXT.has(path.extname(p).toLowerCase()));
@@ -56,7 +62,7 @@ const orphans = assetFiles.filter((f) => {
 });
 /* Every referenced derivative that is not actually on disk would ship as a 404. */
 const missingDerivatives = [...referenced].filter((rel) => !fs.existsSync(path.join(OUT_ASSETS, rel)));
-const everyFile = walkAll(SRC);
+const everyFile = walkAll(SRC).filter(isGallerySource);
 const unsupported = everyFile.length - supported.length;
 
 const ASSET_PATH = /^media\/gallery\/[a-z0-9/_-]+\.webp$/;

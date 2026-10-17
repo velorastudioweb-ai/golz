@@ -4,7 +4,7 @@ import "dotenv/config";
 import mongoose from "mongoose";
 import GalleryItem from "../src/models/GalleryItem.js";
 
-await mongoose.connect(process.env.MONGO_URI || process.env.MONGO_DIRECT_URI, { serverSelectionTimeoutMS: 15000 });
+await mongoose.connect(process.env.MONGO_DIRECT_URI || process.env.MONGO_URI, { serverSelectionTimeoutMS: 15000 });
 
 const docs = await GalleryItem.find({}).sort({ category: 1, order: 1, createdAt: 1 }).lean();
 

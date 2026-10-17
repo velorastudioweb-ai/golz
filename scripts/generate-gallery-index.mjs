@@ -10,7 +10,9 @@
  *
  * What it guarantees
  * ------------------
- *  - fully recursive discovery of every supported image extension;
+ *  - fully recursive discovery of every supported image inside `public/<year>/`
+ *    folders only: sibling folders such as `home-gallery` and loose root assets
+ *    (`logo.png`, `doctor.png`) are managed elsewhere and stay out of the gallery;
  *  - automatic grouping: the top-level folder becomes the year/event section,
  *    and the next folder down (when present) becomes the event name;
  *  - URL-safe output paths (spaces, brackets, commas and ampersands in folder
@@ -144,6 +146,12 @@ function captionFromFilename(stem) {
 
 const upper = (value) => value.toUpperCase();
 
+/** Only `public/<year>/…` belongs to the gallery archive. Top-level names that
+ *  do not start with a year (e.g. `home-gallery`) and loose root assets are
+ *  other features' source material, so they must never become gallery entries. */
+const GALLERY_SECTION = /^\d{4}/;
+const isGallerySource = (file) => GALLERY_SECTION.test(path.relative(SRC, file).split(path.sep)[0]);
+
 /** Recursively yields every supported image file below `dir`. */
 function* walk(dir) {
   let entries;
@@ -183,12 +191,13 @@ async function main() {
     return 0;
   }
 
-  const sources = [...walk(SRC)];
+  /* Scoped to year folders: everything else under public/ is another feature's
+     source material (home-gallery, site assets) and is not gallery content. */
+  const sources = [...walk(SRC)].filter(isGallerySource);
 
-  const loose = sources.filter((file) => path.dirname(file) === SRC);
-  const grouped = sources.length - loose.length;
+  const yearFolders = new Set(sources.map((file) => path.relative(SRC, file).split(path.sep)[0]));
 
-  console.log(`[gallery-index] discovered ${sources.length} images (${grouped} inside folders, ${loose} loose in public/)`);
+  console.log(`[gallery-index] discovered ${sources.length} images across ${yearFolders.size} year folders`);
 
   if (!sources.length) {
     console.log("[gallery-index] nothing to index.");
