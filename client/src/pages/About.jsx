@@ -54,11 +54,11 @@ const HELP_ICONS = [Sparkles, HeartPulse, Baby];
 const FB = {
   heroTitle: "About Dr. Sushma Appaiah",
   name: "Dr. Sushma Appaiah",
-  designation: "Founder & Nutrition Scientist, GOLZ",
+  designation: "Founder Director, GOLZ Nutrition and Diet Solutions",
   image: "/doctor-portrait.jpg",
   experienceYears: 19,
   story:
-    "Dr. Sushma Appaiah is the Founder of GOLZ (Giggles of Livez) and a distinguished nutrition scientist with 19 years of experience in clinical nutrition, corporate wellness, and health counselling. She holds a Ph.D. in Food Science & Technology from CSIR-CFTRI, Mysore, and an M.Sc. in Food & Nutrition (2nd Rank) from the University of Mysore. Over the years, she has helped clients across 13 countries achieve sustainable health through evidence-based nutrition and personalized care.",
+    "Dr. Sushma Appaiah is the Founder Director of GOLZ (Giggles of Livez) and a distinguished nutrition scientist with 19 years of experience in clinical nutrition, corporate wellness, and health counselling.\n\nShe holds a Ph.D. in Food Science & Technology from CSIR-CFTRI, Mysore, and an M.Sc. in Food & Nutrition (2nd Rank) from the University of Mysore.\n\nOver the years, she has helped clients across 13 countries achieve sustainable health through evidence-based nutrition and personalized care.\n\nA recipient of the DST Women Scientist Award and recognized as the Most Innovative Nutrition Counsellor of the Year, Dr. Sushma is known for developing innovative food formulations for special children and translating scientific research into practical nutrition solutions.\n\nRecently honoured with the Karnataka Pride Award for remarkable achievements and transformative contributions in nutrition and wellness.",
   approach:
     "Since founding GOLZ in Mysore in 2015, she's grown it into two centres serving clients across 13 countries — but the philosophy has never changed: nutrition should be personal. She doesn't hand out generic meal charts. She reads your body — your condition, your labs, even your genetics through nutrigenomics — and builds a plan that fits your life. Over the years, that approach has helped thousands reverse diabetes, manage PCOS and thyroid issues, recover from illness, and simply feel better.",
   helpGroups: [
@@ -223,6 +223,9 @@ export default function About() {
                 <p key={para.slice(0, 24)}>{para}</p>
               ))}
             </div>
+            <p className="mt-6 inline-flex max-w-[620px] items-center gap-3 rounded-[18px] border border-lime/40 bg-lime/10 px-6 py-4 font-heading text-lg font-semibold leading-snug text-primary sm:text-xl">
+              <Sparkles size={20} className="shrink-0 text-limeDark" /> 16K+ Lives Touched Since 2015
+            </p>
             <p className="body mt-6 rounded-[18px] border border-line bg-sage/50 p-6 text-ink/75">
               <Quote size={20} className="mb-2 text-primary" />
               {approach}

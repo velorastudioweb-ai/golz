@@ -96,12 +96,11 @@ function CountUp({ value, suffix = "" }) {
 }
 
 const FOUNDER_BIO = [
-  "Dr. Sushma Appaiah is the Founder of GOLZ (Giggles of Livez) and a distinguished nutrition scientist with 19 years of experience in clinical nutrition, corporate wellness, and health counselling.",
-  "Karnataka Pride Award for remarkable achievements & transformative contributions in the field of nutrition and wellness.",
+  "Dr. Sushma Appaiah is the Founder Director of GOLZ (Giggles of Livez) and a distinguished nutrition scientist with 19 years of experience in clinical nutrition, corporate wellness, and health counselling.",
   "She holds a Ph.D. in Food Science & Technology from CSIR-CFTRI, Mysore, and an M.Sc. in Food & Nutrition (2nd Rank) from the University of Mysore.",
   "Over the years, she has helped clients across 13 countries achieve sustainable health through evidence-based nutrition and personalized care.",
   "A recipient of the DST Women Scientist Award and recognized as the Most Innovative Nutrition Counsellor of the Year, Dr. Sushma is known for developing innovative food formulations for special children and translating scientific research into practical nutrition solutions.",
-  "HER AREAS OF EXPERTISE INCLUDE REVERSING DIABETES, PCOD (RECENTLY TERMED AS PMOS), THYROID DISORDERS, PREGNANCY NUTRITION, SPORTS NUTRITION, ASD/ AUTISM AND SPECIAL CHILDREN NUTRITION, NUTRIGENOMICS, GUTBIOMICS, EMPOWERING INDIVIDUALS AND FAMILIES TO BUILD HEALTHIER LIVES THROUGH PERSONALIZED NUTRITION.",
+  "Recently honoured with the Karnataka Pride Award for remarkable achievements and transformative contributions in nutrition and wellness.",
 ].join("\n\n");
 
 /* Indian client portraits for the hero social-proof stack (CC0 portraits in
@@ -299,7 +298,7 @@ export default function Home() {
                 {h.heroTitle || "Real food. Real plans. Real results—built around you."}
               </h1>
               <p className="lead mx-auto mt-5 max-w-[600px] text-muted lg:mx-0">
-                {h.heroSubtitle || "GOLZ is a science-backed platform offering personalized nutrition plans designed to improve your health without giving up the foods you love, serving a global clientele with clinical nutrition."}
+                {h.heroSubtitle || "GOLZ is a science-backed platform offering nutrition plans designed to improve your health without giving up the foods you love, serving global clientele with clinical nutrition holistically."}
               </p>
               <div className="mt-8 flex justify-center lg:justify-start">
                 <Link to={h.ctaPrimary?.link || "/contact"} className="btn-terracotta min-w-[200px] lg:min-w-[220px]">
@@ -376,13 +375,13 @@ export default function Home() {
           {/* Founder story */}
           <Reveal className="order-2 text-center lg:order-none lg:text-left">
             <span className="mb-6 inline-flex items-center gap-2 rounded-full bg-lime px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-ink">
-              <Leaf size={14} /> About the Founder
+              About the Founder
             </span>
             <h2 className="font-heading h2 text-[#EEF3EA]">
               {h.aboutPreview?.title || "Meet Dr. Sushma Appaiah"}
             </h2>
             <p className="mt-3 text-sm font-semibold uppercase tracking-[0.2em] text-lime">
-              {site.about?.designation || "Founder — Clinical Nutritionist & Wellness Counsellor"}
+              {site.about?.designation || "Founder Director, GOLZ Nutrition and Diet Solutions"}
             </p>
 
             <div className="body-lg mx-auto mt-6 max-w-[620px] space-y-4 text-[#DBE6D5]/90 lg:mx-0">
@@ -390,6 +389,10 @@ export default function Home() {
                 <p key={para.slice(0, 24)}>{para}</p>
               ))}
             </div>
+
+            <p className="mt-7 inline-flex max-w-[620px] items-center justify-center gap-3 rounded-[18px] border border-lime/40 bg-lime/10 px-6 py-4 font-heading text-lg font-semibold leading-snug text-lime sm:text-xl">
+              <Sparkles size={20} className="shrink-0" /> 16K+ Lives Touched Since 2015
+            </p>
 
             <div className="mx-auto mt-9 grid max-w-[620px] grid-cols-2 divide-x divide-white/10 rounded-[18px] border border-white/15 bg-white/5 py-6 lg:mx-0">
               {[

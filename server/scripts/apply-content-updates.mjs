@@ -9,15 +9,14 @@ import "dotenv/config";
 import mongoose from "mongoose";
 
 const NEW_BIO =
-  "Dr. Sushma Appaiah is the Founder of GOLZ (Giggles of Livez) and a distinguished nutrition scientist with 19 years of experience in clinical nutrition, corporate wellness, and health counselling.\n\n" +
-  "Karnataka Pride Award for remarkable achievements & transformative contributions in the field of nutrition and wellness.\n\n" +
+  "Dr. Sushma Appaiah is the Founder Director of GOLZ (Giggles of Livez) and a distinguished nutrition scientist with 19 years of experience in clinical nutrition, corporate wellness, and health counselling.\n\n" +
   "She holds a Ph.D. in Food Science & Technology from CSIR-CFTRI, Mysore, and an M.Sc. in Food & Nutrition (2nd Rank) from the University of Mysore.\n\n" +
   "Over the years, she has helped clients across 13 countries achieve sustainable health through evidence-based nutrition and personalized care.\n\n" +
   "A recipient of the DST Women Scientist Award and recognized as the Most Innovative Nutrition Counsellor of the Year, Dr. Sushma is known for developing innovative food formulations for special children and translating scientific research into practical nutrition solutions.\n\n" +
-  "HER AREAS OF EXPERTISE INCLUDE REVERSING DIABETES, PCOD (RECENTLY TERMED AS PMOS), THYROID DISORDERS, PREGNANCY NUTRITION, SPORTS NUTRITION, ASD/ AUTISM AND SPECIAL CHILDREN NUTRITION, NUTRIGENOMICS, GUTBIOMICS, EMPOWERING INDIVIDUALS AND FAMILIES TO BUILD HEALTHIER LIVES THROUGH PERSONALIZED NUTRITION.";
+  "Recently honoured with the Karnataka Pride Award for remarkable achievements and transformative contributions in nutrition and wellness.";
 
 const HERO_SUBTITLE =
-  "GOLZ is a science-backed platform offering personalized nutrition plans designed to improve your health without giving up the foods you love, serving a global clientele with clinical nutrition.";
+  "GOLZ is a science-backed platform offering nutrition plans designed to improve your health without giving up the foods you love, serving global clientele with clinical nutrition holistically.";
 
 const HOMEPAGE_STATS = [
   { value: 19, suffix: "+", label: "Years of changing lives with nutrition and wellness programs" },

@@ -317,7 +317,7 @@ const TESTIMONIALS = [
 
 const GENERAL = {
   clinicName: "GOLZ (Giggles of Livez)",
-  tagline: "Personalized Nutrition Care, Mysuru",
+  tagline: "Nutrition and Diet Solutions, Mysuru",
   email: "nutrigolz@gmail.com",
   phone: "+91 934-267-4406",
   whatsapp: "919342674406",
@@ -340,7 +340,7 @@ const GENERAL = {
 const HOMEPAGE = {
   heroTitle: "Real food. Real plans. Real results—built around you.",
   heroSubtitle:
-    "GOLZ is a science-backed platform offering personalized nutrition plans designed to improve your health without giving up the foods you love, serving a global clientele with clinical nutrition.",
+    "GOLZ is a science-backed platform offering nutrition plans designed to improve your health without giving up the foods you love, serving global clientele with clinical nutrition holistically.",
   heroBadge: "Personalized Nutrition Care Since 2015",
   heroImage: "/media/gallery/2019/one-day-workshop-enteral-nutrition-in-the-critically-dec-2019/pic-2-1600.webp",
   heroPortrait: "/hero-banner.png",
@@ -361,7 +361,7 @@ const HOMEPAGE = {
   ],
   aboutPreview: {
     title: "Meet Dr. Sushma Appaiah",
-    text: "Dr. Sushma Appaiah is the Founder of GOLZ (Giggles of Livez) and a distinguished nutrition scientist with 19 years of experience in clinical nutrition, corporate wellness, and health counselling.\n\nKarnataka Pride Award for remarkable achievements & transformative contributions in the field of nutrition and wellness.\n\nShe holds a Ph.D. in Food Science & Technology from CSIR-CFTRI, Mysore, and an M.Sc. in Food & Nutrition (2nd Rank) from the University of Mysore.\n\nOver the years, she has helped clients across 13 countries achieve sustainable health through evidence-based nutrition and personalized care.\n\nA recipient of the DST Women Scientist Award and recognized as the Most Innovative Nutrition Counsellor of the Year, Dr. Sushma is known for developing innovative food formulations for special children and translating scientific research into practical nutrition solutions.\n\nHER AREAS OF EXPERTISE INCLUDE REVERSING DIABETES, PCOD (RECENTLY TERMED AS PMOS), THYROID DISORDERS, PREGNANCY NUTRITION, SPORTS NUTRITION, ASD/ AUTISM AND SPECIAL CHILDREN NUTRITION, NUTRIGENOMICS, GUTBIOMICS, EMPOWERING INDIVIDUALS AND FAMILIES TO BUILD HEALTHIER LIVES THROUGH PERSONALIZED NUTRITION.",
+    text: "Dr. Sushma Appaiah is the Founder Director of GOLZ (Giggles of Livez) and a distinguished nutrition scientist with 19 years of experience in clinical nutrition, corporate wellness, and health counselling.\n\nShe holds a Ph.D. in Food Science & Technology from CSIR-CFTRI, Mysore, and an M.Sc. in Food & Nutrition (2nd Rank) from the University of Mysore.\n\nOver the years, she has helped clients across 13 countries achieve sustainable health through evidence-based nutrition and personalized care.\n\nA recipient of the DST Women Scientist Award and recognized as the Most Innovative Nutrition Counsellor of the Year, Dr. Sushma is known for developing innovative food formulations for special children and translating scientific research into practical nutrition solutions.\n\nRecently honoured with the Karnataka Pride Award for remarkable achievements and transformative contributions in nutrition and wellness.",
     image: "/doctor-portrait.jpg",
     buttonLabel: "Know More",
     buttonLink: "/about",
@@ -392,11 +392,11 @@ const HOMEPAGE = {
 const ABOUT = {
   heroTitle: "About Dr. Sushma Appaiah",
   name: "Dr. Sushma Appaiah",
-  designation: "Founder & Nutrition Scientist, GOLZ",
+  designation: "Founder Director, GOLZ Nutrition and Diet Solutions",
   image: "/doctor-portrait.jpg",
-  bio: "Dr. Sushma Appaiah is the Founder of GOLZ (Giggles of Livez) and a distinguished nutrition scientist with 19 years of experience in clinical nutrition, corporate wellness, and health counselling.\n\nKarnataka Pride Award for remarkable achievements & transformative contributions in the field of nutrition and wellness.\n\nShe holds a Ph.D. in Food Science & Technology from CSIR-CFTRI, Mysore, and an M.Sc. in Food & Nutrition (2nd Rank) from the University of Mysore.\n\nOver the years, she has helped clients across 13 countries achieve sustainable health through evidence-based nutrition and personalized care.\n\nA recipient of the DST Women Scientist Award and recognized as the Most Innovative Nutrition Counsellor of the Year, Dr. Sushma is known for developing innovative food formulations for special children and translating scientific research into practical nutrition solutions.\n\nHER AREAS OF EXPERTISE INCLUDE REVERSING DIABETES, PCOD (RECENTLY TERMED AS PMOS), THYROID DISORDERS, PREGNANCY NUTRITION, SPORTS NUTRITION, ASD/ AUTISM AND SPECIAL CHILDREN NUTRITION, NUTRIGENOMICS, GUTBIOMICS, EMPOWERING INDIVIDUALS AND FAMILIES TO BUILD HEALTHIER LIVES THROUGH PERSONALIZED NUTRITION.",
+  bio: "Dr. Sushma Appaiah is the Founder Director of GOLZ (Giggles of Livez) and a distinguished nutrition scientist with 19 years of experience in clinical nutrition, corporate wellness, and health counselling.\n\nShe holds a Ph.D. in Food Science & Technology from CSIR-CFTRI, Mysore, and an M.Sc. in Food & Nutrition (2nd Rank) from the University of Mysore.\n\nOver the years, she has helped clients across 13 countries achieve sustainable health through evidence-based nutrition and personalized care.\n\nA recipient of the DST Women Scientist Award and recognized as the Most Innovative Nutrition Counsellor of the Year, Dr. Sushma is known for developing innovative food formulations for special children and translating scientific research into practical nutrition solutions.\n\nRecently honoured with the Karnataka Pride Award for remarkable achievements and transformative contributions in nutrition and wellness.",
   story:
-    "Dr. Sushma Appaiah is the Founder of GOLZ (Giggles of Livez) and a distinguished nutrition scientist with 19 years of experience in clinical nutrition, corporate wellness, and health counselling. She holds a Ph.D. in Food Science & Technology from CSIR-CFTRI, Mysore, and an M.Sc. in Food & Nutrition (2nd Rank) from the University of Mysore. Over the years, she has helped clients across 13 countries achieve sustainable health through evidence-based nutrition and personalized care.",
+    "Dr. Sushma Appaiah is the Founder Director of GOLZ (Giggles of Livez) and a distinguished nutrition scientist with 19 years of experience in clinical nutrition, corporate wellness, and health counselling.\n\nShe holds a Ph.D. in Food Science & Technology from CSIR-CFTRI, Mysore, and an M.Sc. in Food & Nutrition (2nd Rank) from the University of Mysore.\n\nOver the years, she has helped clients across 13 countries achieve sustainable health through evidence-based nutrition and personalized care.\n\nA recipient of the DST Women Scientist Award and recognized as the Most Innovative Nutrition Counsellor of the Year, Dr. Sushma is known for developing innovative food formulations for special children and translating scientific research into practical nutrition solutions.\n\nRecently honoured with the Karnataka Pride Award for remarkable achievements and transformative contributions in nutrition and wellness.",
   approach:
     "Since founding GOLZ in Mysore in 2015, she's grown it into two centres serving clients across 13 countries — but the philosophy has never changed: nutrition should be personal. She doesn't hand out generic meal charts. She reads your body — your condition, your labs, even your genetics through nutrigenomics — and builds a plan that fits your life. Over the years, that approach has helped thousands reverse diabetes, manage PCOS and thyroid issues, recover from illness, and simply feel better.",
   helpGroups: [
@@ -498,7 +498,7 @@ const ABOUT = {
 };
 
 const SEO = {
-  metaTitle: "GOLZ (Giggles of Livez) — Personalized Nutrition Care, Mysuru",
+  metaTitle: "GOLZ (Giggles of Livez) — Nutrition and Diet Solutions, Mysuru",
   metaDescription:
     "Dr. Sushma Appaiah's GOLZ — science-backed, personalized nutrition plans in Mysuru for weight, diabetes, thyroid, PCOS, pregnancy, children & special needs. Online & in-clinic consultations.",
   keywords: "nutritionist Mysuru, dietitian Mysuru, diabetes diet, PCOS diet, thyroid nutrition, special child nutrition, pregnancy diet, weight loss program",

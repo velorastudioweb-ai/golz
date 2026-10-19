@@ -62,7 +62,7 @@ export default function Header() {
             )}
             <span className="min-w-0 leading-tight">
               <span className="block truncate font-heading text-lg font-semibold text-ink">{name}</span>
-              <span className="hidden text-[11px] tracking-wide text-muted sm:block">{site.general?.tagline || "Personalized Nutrition"}</span>
+              <span className="hidden text-[11px] tracking-wide text-muted sm:block">{site.general?.tagline || "Nutrition and Diet Solutions, Mysuru"}</span>
             </span>
           </Link>
 

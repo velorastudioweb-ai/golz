@@ -56,8 +56,8 @@ export default function Footer() {
             <span className="font-heading text-lg font-semibold text-[#EEF3EA]">{g.clinicName || "GOLZ (Giggles of Livez)"}</span>
           </div>
           <p className="mb-6 text-sm leading-relaxed">
-            GOLZ is a science-backed platform offering personalized nutrition plans designed to improve your health
-            without giving up the foods you love, serving a global clientele with clinical nutrition.
+            GOLZ is a science-backed platform offering nutrition plans designed to improve your health
+            without giving up the foods you love, serving global clientele with clinical nutrition holistically.
           </p>
           <div className="flex gap-2.5">
             {socials.map(({ key, url, Icon }) => (
