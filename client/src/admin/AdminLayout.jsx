@@ -25,6 +25,9 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [current, setCurrent] = useState("");
+  /* GOLZ badge ships with the bundle; the drawn mark stands in only if the
+     image ever fails to load. */
+  const [logoOk, setLogoOk] = useState(true);
 
   useEffect(() => {
     if (!loading && !user) navigate("/admin/login", { replace: true });
@@ -46,8 +49,17 @@ export default function AdminLayout() {
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar (desktop) */}
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-charcoal text-white lg:flex">
-        <div className="flex items-center gap-2.5 px-6 py-6">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-sage to-primary"><Leaf size={20} /></span>
+        <div className="flex items-center gap-3 px-6 py-6">
+          {logoOk ? (
+            <img
+              src="/logo.png"
+              alt="GOLZ"
+              onError={() => setLogoOk(false)}
+              className="h-11 w-auto shrink-0 object-contain"
+            />
+          ) : (
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sage to-primary"><Leaf size={20} /></span>
+          )}
           <div>
             <p className="font-heading font-bold leading-tight">GOLZ Admin</p>
             <p className="text-xs text-white/50">Content management</p>
@@ -79,7 +91,19 @@ export default function AdminLayout() {
               initial={{ x: -280 }} animate={{ x: 0 }} exit={{ x: -280 }} transition={{ type: "tween", duration: 0.25 }}
               className="flex h-full w-64 flex-col bg-charcoal p-4 text-white" onClick={(e) => e.stopPropagation()}
             >
-              <button onClick={() => setSidebarOpen(false)} className="mb-4 ml-auto rounded-lg p-2 hover:bg-white/10" aria-label="Close menu"><X size={20} /></button>
+              <div className="mb-4 flex items-center justify-between gap-3">
+                {logoOk ? (
+                  <img
+                    src="/logo.png"
+                    alt="GOLZ"
+                    onError={() => setLogoOk(false)}
+                    className="h-10 w-auto shrink-0 object-contain"
+                  />
+                ) : (
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sage to-primary"><Leaf size={18} /></span>
+                )}
+                <button onClick={() => setSidebarOpen(false)} className="ml-auto rounded-lg p-2 hover:bg-white/10" aria-label="Close menu"><X size={20} /></button>
+              </div>
               {NAV.map(({ to, label, Icon, end }) => (
                 <NavLink key={to} to={to} end={end} onClick={() => setSidebarOpen(false)}
                   className={({ isActive }) => `mb-1 flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium ${isActive ? "bg-primary text-white" : "text-white/65 hover:bg-white/10"}`}>

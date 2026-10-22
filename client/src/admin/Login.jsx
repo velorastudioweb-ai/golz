@@ -11,6 +11,9 @@ export default function Login() {
   const { user, login } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState(null);
+  /* GOLZ badge ships with the bundle; the drawn mark stands in only if the
+     image ever fails to load. */
+  const [logoOk, setLogoOk] = useState(true);
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
 
   useEffect(() => {
@@ -34,9 +37,18 @@ export default function Login() {
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
           <div className="card p-8 sm:p-10">
             <div className="mb-8 text-center">
-              <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-sage to-primary text-white shadow-soft">
-                <Leaf size={28} />
-              </span>
+              {logoOk ? (
+                <img
+                  src="/logo.png"
+                  alt="GOLZ (Giggles of Livez)"
+                  onError={() => setLogoOk(false)}
+                  className="mx-auto mb-4 h-16 w-auto object-contain"
+                />
+              ) : (
+                <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-sage to-primary text-white shadow-soft">
+                  <Leaf size={28} />
+                </span>
+              )}
               <h1 className="font-heading text-2xl font-bold text-charcoal">Admin Login</h1>
               <p className="mt-1.5 text-sm text-charcoal/50">GOLZ (Giggles of Livez) — content management</p>
             </div>
