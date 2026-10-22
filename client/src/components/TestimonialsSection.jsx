@@ -9,6 +9,7 @@ const GAP = 32;
 const AUTOPLAY_MS = 6000;
 
 const TRUST_STATS = [
+  { value: 16, suffix: "K+", label: "Lives Touched Since 2015", decimals: 0 },
   { value: 8, suffix: "k+", label: "Happy Clients", decimals: 0 },
   { value: 4.8, suffix: "/5", label: "Average Rating", decimals: 1 },
 ];
@@ -209,7 +210,7 @@ function TestimonialsSection({ items = [] }) {
           </p>
         </Reveal>
 
-        <div className="mx-auto mb-10 grid max-w-2xl grid-cols-1 gap-4 sm:mb-14 sm:grid-cols-2">
+        <div className="mx-auto mb-10 grid max-w-3xl grid-cols-1 gap-4 sm:mb-14 sm:grid-cols-3">
           {TRUST_STATS.map((s, i) => (
             <Reveal key={s.label} delay={i * 0.1}>
               <div className="rounded-2xl border border-white/10 bg-white/[0.06] px-6 py-5 text-center backdrop-blur transition-all duration-300 sm:hover:-translate-y-1 sm:hover:border-[#D4AF37]/30">

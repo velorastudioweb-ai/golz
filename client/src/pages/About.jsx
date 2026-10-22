@@ -164,7 +164,11 @@ export default function About() {
   const affiliations = str(a.affiliations, FB.affiliations);
   const mission = str(a.mission, FB.mission);
   const vision = str(a.vision, FB.vision);
-  const stats = arr(a.stats, FB.stats);
+  const stats = arr(a.stats, [
+    { value: 19, suffix: "+", label: "Years of changing lives with nutrition and wellness programs" },
+    { value: 8000, suffix: "+", label: "Personalized diet plans delivered" },
+    { value: 3000, suffix: "+", label: "Specialized diet plans for children" },
+  ]);
 
   const s = a.specialNeeds || {};
   const sn = {
