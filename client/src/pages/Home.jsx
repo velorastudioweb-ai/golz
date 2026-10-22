@@ -390,10 +390,6 @@ export default function Home() {
               ))}
             </div>
 
-            <p className="mt-7 inline-flex max-w-[620px] items-center justify-center gap-3 rounded-[18px] border border-lime/40 bg-lime/10 px-6 py-4 font-heading text-lg font-semibold leading-snug text-lime sm:text-xl">
-              <Sparkles size={20} className="shrink-0" /> 16K+ Lives Touched Since 2015
-            </p>
-
             <div className="mx-auto mt-9 grid max-w-[620px] grid-cols-2 divide-x divide-white/10 rounded-[18px] border border-white/15 bg-white/5 py-6 lg:mx-0">
               {[
                 { value: site.about?.experienceYears || 19, suffix: "+", label: "Years of Experience" },
