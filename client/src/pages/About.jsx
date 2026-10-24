@@ -151,7 +151,6 @@ export default function About() {
   const name = str(a.name, FB.name);
   const designation = str(a.designation, FB.designation);
   const image = str(a.image, FB.image);
-  const experienceYears = Number(a.experienceYears) > 0 ? Number(a.experienceYears) : FB.experienceYears;
   const story = str(a.story, FB.story);
   const approach = str(a.approach, FB.approach);
   const helpGroups = arr(a.helpGroups, FB.helpGroups);
@@ -215,17 +214,13 @@ export default function About() {
             {image && (
               <img src={image} alt={name} className="relative z-10 h-[360px] w-full rounded-[180px_180px_22px_22px] object-cover shadow-lift sm:h-[500px] lg:h-[600px]" loading="lazy" />
             )}
-            <div className="glass absolute -bottom-7 left-10 z-20 rounded-[18px] px-7 py-4 shadow-card">
-              <p className="font-heading text-2xl font-semibold text-primary">{experienceYears}+</p>
-              <p className="text-xs text-muted">Years of Experience</p>
-            </div>
-          </Reveal>
-          <div className="order-1 lg:order-2">
-            <SectionHeading center={false} eyebrow="The Story" title={name || "Your Nutritionist"} />
-            <p className="mt-3 inline-flex items-center gap-2.5 text-sm font-semibold uppercase tracking-[0.18em] text-primary">
+            <p className="relative z-10 mt-6 flex items-center justify-center gap-2.5 text-center text-sm font-semibold uppercase tracking-[0.18em] text-primary lg:justify-start lg:text-left">
               <Crown size={16} className="shrink-0 text-limeDark" />
               {designation}
             </p>
+          </Reveal>
+          <div className="order-1 lg:order-2">
+            <SectionHeading center={false} eyebrow="The Story" title={name || "Your Nutritionist"} />
             <div className="body mt-5 space-y-4 text-ink/75">
               {story.split(/\n{2,}/).map((para) => (
                 <p key={para.slice(0, 24)}>{para}</p>
