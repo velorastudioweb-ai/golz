@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import {
   ArrowRight, CalendarCheck, Star, ArrowUpRight, BadgeCheck, Camera,
-  Leaf, GraduationCap, Sparkles,
+  Leaf, GraduationCap, Sparkles, Crown,
 } from "lucide-react";
 import { useSite } from "../context/SiteContext";
 import SEO from "../components/SEO";
@@ -440,6 +440,10 @@ export default function Home() {
               />
               {/* Experience badge removed per request */}
             </motion.div>
+            <p className="mt-6 flex items-center justify-center gap-2.5 text-center text-sm font-semibold uppercase tracking-[0.18em] text-lime lg:text-left">
+              <Crown size={16} className="shrink-0" />
+              {site.about?.designation || "Founder Director, GOLZ Nutrition and Diet Solutions"}
+            </p>
           </Reveal>
         </div>
       </section>

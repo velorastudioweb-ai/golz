@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import {
   GraduationCap, Award, Target, Eye, ArrowRight, CheckCircle2, BadgeCheck,
-  Sparkles, HeartPulse, Quote, Baby, Mic, Medal,
+  Sparkles, HeartPulse, Quote, Baby, Mic, Medal, Crown,
 } from "lucide-react";
 import { useSite } from "../context/SiteContext";
 import SEO from "../components/SEO";
@@ -222,6 +222,10 @@ export default function About() {
           </Reveal>
           <div className="order-1 lg:order-2">
             <SectionHeading center={false} eyebrow="The Story" title={name || "Your Nutritionist"} />
+            <p className="mt-3 inline-flex items-center gap-2.5 text-sm font-semibold uppercase tracking-[0.18em] text-primary">
+              <Crown size={16} className="shrink-0 text-limeDark" />
+              {designation}
+            </p>
             <div className="body mt-5 space-y-4 text-ink/75">
               {story.split(/\n{2,}/).map((para) => (
                 <p key={para.slice(0, 24)}>{para}</p>
