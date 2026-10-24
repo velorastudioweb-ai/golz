@@ -423,9 +423,6 @@ export default function Home() {
 
           {/* Portrait */}
           <Reveal delay={0.15} className="relative order-1 mx-auto w-full max-w-[420px] lg:order-none lg:max-w-none">
-            <div className="absolute -top-2 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-lime px-4 py-2 text-ink shadow-[0_16px_40px_rgba(0,0,0,0.35)]">
-              <p className="text-sm font-bold">GOLZ · Founder &amp; Director</p>
-            </div>
             <motion.div animate={{ y: [0, -8, 0] }} transition={{ repeat: Infinity, duration: 6 }} className="relative rounded-[180px_180px_22px_22px] border border-white/15 bg-white/5 p-6 sm:p-8">
               <img
                 src={h.aboutPreview?.image || "/doctor-portrait.jpg"}
